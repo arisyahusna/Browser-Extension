@@ -1,0 +1,72 @@
+import React, { useRef, useEffect } from 'react';
+import { useBrowser } from '../../context/BrowserContext';
+import { MOCK_ARTICLES } from '../../data/mockArticles';
+import { NewsHeader } from '../news/NewsHeader';
+import { NewsHomepage } from '../news/NewsHomepage';
+import { NewsArticlePage } from '../news/NewsArticlePage';
+import { NewsCategoryPage } from '../news/NewsCategoryPage';
+import { NewsFooter } from '../news/NewsFooter';
+
+export const BrowserContent: React.FC = () => {
+  const { currentLocation, activeTabId, activeTab } = useBrowser();
+  const scrollContainerRef = useRef<HTMLDivElement>(null);
+
+  // When changing pages or tabs, reset scroll position smoothly to top
+  useEffect(() => {
+    if (scrollContainerRef.current) {
+      scrollContainerRef.current.scrollTo({ top: 0, behavior: 'instant' });
+    }
+  }, [currentLocation.pathname, activeTabId]);
+
+  // Determine which page to render
+  const renderCurrentView = () => {
+    const { pathname, articleId } = currentLocation;
+
+    if (pathname.startsWith('/articles/')) {
+      const slug = pathname.replace('/articles/', '');
+      const article =
+        MOCK_ARTICLES.find((a) => a.slug === slug || a.id === articleId) ||
+        MOCK_ARTICLES[0];
+
+      return <NewsArticlePage article={article} />;
+    }
+
+    if (pathname.startsWith('/category/')) {
+      const categorySlug = pathname.replace('/category/', '');
+      return <NewsCategoryPage categorySlug={categorySlug} />;
+    }
+
+    return <NewsHomepage />;
+  };
+
+  const currentCategory = currentLocation.category || 
+    (currentLocation.pathname.startsWith('/category/') 
+      ? currentLocation.pathname.replace('/category/', '') 
+      : 'home');
+
+  return (
+    <div
+      ref={scrollContainerRef}
+      className="flex-1 w-full overflow-y-auto overflow-x-hidden relative bg-white select-text scroll-smooth"
+      style={{
+        scrollbarGutter: 'stable',
+      }}
+    >
+      {/* Visual subtle loader bar when activeTab is loading */}
+      {activeTab.isLoading && (
+        <div className="sticky top-0 left-0 right-0 h-0.5 bg-rose-600 animate-pulse z-50" />
+      )}
+
+      {/* Website Header */}
+      <NewsHeader currentCategory={currentCategory} />
+
+      {/* Main Website Page Content */}
+      <main className="min-h-[calc(100vh-280px)]">
+        {renderCurrentView()}
+      </main>
+
+      {/* Website Footer */}
+      <NewsFooter />
+    </div>
+  );
+};
