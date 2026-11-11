@@ -10,7 +10,7 @@ import {
 } from 'lucide-react';
 import { useBrowser } from '../../context/BrowserContext';
 import { AIFAExtensionIcon } from '../aifa/AIFAExtensionIcon';
-import { AIFAPopupPlaceholder } from '../aifa/AIFAPopupPlaceholder';
+import { AIFAToolbarPopup } from '../aifa/AIFAToolbarPopup';
 
 export const BrowserToolbar: React.FC = () => {
   const {
@@ -158,7 +158,7 @@ export const BrowserToolbar: React.FC = () => {
         <AIFAExtensionIcon isOpen={isAifaPopupOpen} onClick={toggleAifaPopup} />
 
         {/* AIFA Extension Popup Dropdown */}
-        <AIFAPopupPlaceholder
+        <AIFAToolbarPopup
           isOpen={isAifaPopupOpen}
           onClose={() => setAifaPopupOpen(false)}
         />

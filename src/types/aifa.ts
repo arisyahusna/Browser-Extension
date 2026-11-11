@@ -59,9 +59,64 @@ export interface VerificationResult {
   demoNotice: string;
 }
 
+export interface VerificationHistoryRecord {
+  id: string;
+  contentId: string;
+  contentType: 'article' | 'social-post';
+  headline: string;
+  platformName: string;
+  sourceUrl: string;
+  verifiedAt: string;
+  overallAssessment: OverallAssessment;
+  overallLabel: string;
+  summary: string;
+  claimsCount: number;
+  result: VerificationResult;
+}
+
+export interface NotificationItem {
+  id: string;
+  title: string;
+  message: string;
+  relatedRequestId: string;
+  referenceNumber: string;
+  timestamp: string;
+  isRead: boolean;
+  type: 'request_completed' | 'request_review' | 'system';
+}
+
+export interface UserProfile {
+  name: string;
+  email: string;
+  avatar: string;
+  isConnected: boolean;
+  connectedAt?: string;
+}
+
+export interface NotificationPreferences {
+  browserNotifications: boolean;
+  emailNotifications: boolean;
+}
+
 export interface AifaContextType {
+  // Auth & Connection
+  userProfile: UserProfile;
+  isConnectingAccount: boolean;
+  connectAccount: () => void;
+  disconnectAccount: () => void;
+  isSignInModalOpen: boolean;
+  setSignInModalOpen: (open: boolean) => void;
+  
+  // Extension enablement
   isExtensionEnabled: boolean;
   toggleExtension: () => void;
+  
+  // Onboarding
+  isOnboardingCompleted: boolean;
+  isOnboardingOpen: boolean;
+  openOnboarding: () => void;
+  closeOnboarding: () => void;
+  completeOnboarding: () => void;
   
   // Detection targets
   detectedArticle: DetectedArticleInfo | null;
@@ -115,4 +170,34 @@ export interface AifaContextType {
   submittedRequests: FactCheckRequest[];
   viewRequestDetail: (req: FactCheckRequest) => void;
   returnToResults: () => void;
+  
+  // Stage 5 Capabilities:
+  // History Store
+  verificationHistory: VerificationHistoryRecord[];
+  deleteHistoryRecord: (id: string) => void;
+  clearHistory: () => void;
+  
+  // Demo Controls for Request Lifecycle (Presenter mode)
+  advanceRequestStatus: (requestId: string, newStatus: 'Under Review' | 'Completed') => void;
+  clearDemoRequests: () => void;
+  resetAllDemoData: () => void;
+  
+  // Notifications
+  notifications: NotificationItem[];
+  unreadNotificationCount: number;
+  markNotificationAsRead: (id: string) => void;
+  markAllNotificationsAsRead: () => void;
+  activeToastNotification: NotificationItem | null;
+  dismissToastNotification: () => void;
+  
+  // Email Preview
+  emailPreviewRequest: FactCheckRequest | null;
+  openEmailPreview: (req: FactCheckRequest) => void;
+  closeEmailPreview: () => void;
+  
+  // Notification Preferences & Settings
+  notificationPreferences: NotificationPreferences;
+  updateNotificationPreferences: (prefs: Partial<NotificationPreferences>) => void;
+  isSettingsModalOpen: boolean;
+  setSettingsModalOpen: (open: boolean) => void;
 }

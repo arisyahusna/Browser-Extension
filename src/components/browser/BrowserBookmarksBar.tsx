@@ -1,6 +1,6 @@
 import React from 'react';
 import { useBrowser } from '../../context/BrowserContext';
-import { Newspaper, Users, MessageSquareQuote, ShieldAlert } from 'lucide-react';
+import { Newspaper, Users, MessageSquareQuote, ShieldAlert, ShieldCheck } from 'lucide-react';
 
 export const BrowserBookmarksBar: React.FC = () => {
   const { navigate, currentLocation } = useBrowser();
@@ -16,7 +16,10 @@ export const BrowserBookmarksBar: React.FC = () => {
         platform: 'news' as const,
       },
       icon: <Newspaper className="w-3.5 h-3.5 text-blue-600" />,
-      isActive: !currentLocation.pathname.startsWith('/connectsocial') && !currentLocation.pathname.startsWith('/pulsefeed'),
+      isActive:
+        !currentLocation.pathname.startsWith('/connectsocial') &&
+        !currentLocation.pathname.startsWith('/pulsefeed') &&
+        !currentLocation.pathname.startsWith('/sebenarnya-dashboard'),
     },
     {
       id: 'b-connect',
@@ -43,6 +46,19 @@ export const BrowserBookmarksBar: React.FC = () => {
       },
       icon: <MessageSquareQuote className="w-3.5 h-3.5 text-slate-800" />,
       isActive: currentLocation.pathname.startsWith('/pulsefeed'),
+    },
+    {
+      id: 'b-dashboard',
+      title: 'Sebenarnya.my Dashboard',
+      url: 'https://sebenarnya-dashboard.example/',
+      location: {
+        pathname: '/sebenarnya-dashboard',
+        title: 'Sebenarnya.my — AIFA Fact-Checking User Dashboard',
+        platform: 'dashboard' as const,
+        customUrl: 'https://sebenarnya-dashboard.example/',
+      },
+      icon: <ShieldCheck className="w-3.5 h-3.5 text-teal-600" />,
+      isActive: currentLocation.pathname.startsWith('/sebenarnya-dashboard'),
     },
     {
       id: 'b-viral',
@@ -84,3 +100,4 @@ export const BrowserBookmarksBar: React.FC = () => {
     </div>
   );
 };
+

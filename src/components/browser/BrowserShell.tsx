@@ -3,10 +3,15 @@ import { BrowserTabBar } from './BrowserTabBar';
 import { BrowserToolbar } from './BrowserToolbar';
 import { BrowserBookmarksBar } from './BrowserBookmarksBar';
 import { BrowserContent } from './BrowserContent';
+import { AIFASignInModal } from '../aifa/AIFASignInModal';
+import { AIFAOnboardingModal } from '../aifa/AIFAOnboardingModal';
+import { AIFAEmailPreviewModal } from '../aifa/AIFAEmailPreviewModal';
+import { AIFASettingsModal } from '../aifa/AIFASettingsModal';
+import { AIFANotificationToast } from '../aifa/AIFANotificationToast';
 
 export const BrowserShell: React.FC = () => {
   return (
-    <div className="w-screen h-screen flex flex-col overflow-hidden bg-[#DEE1E6] select-none text-slate-800 font-sans">
+    <div className="w-screen h-screen flex flex-col overflow-hidden bg-[#DEE1E6] select-none text-slate-800 font-sans relative">
       {/* Layer 1: Browser Tab Bar (Fixed at top) */}
       <BrowserTabBar />
 
@@ -18,7 +23,17 @@ export const BrowserShell: React.FC = () => {
 
       {/* Layer 3: Website Content Area (Scrolls independently) */}
       <BrowserContent />
+
+      {/* Stage 5: In-App Browser Notification Toast */}
+      <AIFANotificationToast />
+
+      {/* Stage 5 Modals */}
+      <AIFASignInModal />
+      <AIFAOnboardingModal />
+      <AIFAEmailPreviewModal />
+      <AIFASettingsModal />
     </div>
   );
 };
+
 

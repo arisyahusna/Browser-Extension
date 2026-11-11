@@ -15,6 +15,10 @@ import {
   AnalysisStep,
   VerificationResult,
   ClaimAnalysis,
+  VerificationHistoryRecord,
+  NotificationItem,
+  UserProfile,
+  NotificationPreferences,
 } from '../types/aifa';
 import { SocialPost, FactCheckRequest, OcrBoundingBox } from '../types/social';
 import { useBrowser } from './BrowserContext';
@@ -25,6 +29,12 @@ import {
   MOCK_PULSE_POSTS,
   MOCK_SOCIAL_VERIFICATIONS,
 } from '../data/mockSocialPosts';
+import {
+  INITIAL_USER_PROFILE,
+  INITIAL_HISTORY,
+  INITIAL_REQUESTS,
+  INITIAL_NOTIFICATIONS,
+} from '../data/mockInitialState';
 
 const AifaContext = createContext<AifaContextType | undefined>(undefined);
 
@@ -32,11 +42,55 @@ export const AifaProvider: React.FC<{ children: React.ReactNode }> = ({ children
   const { currentLocation, activeTabId, displayUrl, refreshNonce } = useBrowser();
   const [isExtensionEnabled, setIsExtensionEnabled] = useState(true);
 
+  // Auth & Connection State (Stage 5)
+  const [userProfile, setUserProfile] = useState<UserProfile>(() => {
+    const saved = localStorage.getItem('aifa_user_profile');
+    return saved ? JSON.parse(saved) : INITIAL_USER_PROFILE;
+  });
+  const [isConnectingAccount, setIsConnectingAccount] = useState(false);
+  const [isSignInModalOpen, setSignInModalOpen] = useState(false);
+
+  // Onboarding State (Stage 5)
+  const [isOnboardingCompleted, setIsOnboardingCompleted] = useState<boolean>(() => {
+    return localStorage.getItem('aifa_onboarding_completed') === 'true';
+  });
+  const [isOnboardingOpen, setIsOnboardingOpen] = useState(false);
+
+  // Settings & Notification Preferences (Stage 5)
+  const [isSettingsModalOpen, setSettingsModalOpen] = useState(false);
+  const [notificationPreferences, setNotificationPreferences] = useState<NotificationPreferences>({
+    browserNotifications: true,
+    emailNotifications: true,
+  });
+
+  // History Store (Stage 5)
+  const [verificationHistory, setVerificationHistory] = useState<VerificationHistoryRecord[]>(() => {
+    const saved = localStorage.getItem('aifa_verification_history');
+    return saved ? JSON.parse(saved) : INITIAL_HISTORY;
+  });
+
+  // Requests State (Stage 4 & 5)
+  const [submittedRequests, setSubmittedRequests] = useState<FactCheckRequest[]>(() => {
+    const saved = localStorage.getItem('aifa_fact_check_requests');
+    return saved ? JSON.parse(saved) : INITIAL_REQUESTS;
+  });
+  const [activeFactCheckClaim, setActiveFactCheckClaim] = useState<ClaimAnalysis | null>(null);
+  const [isSubmittingRequest, setIsSubmittingRequest] = useState(false);
+  const [currentRequest, setCurrentRequest] = useState<FactCheckRequest | null>(null);
+
+  // Notifications (Stage 5)
+  const [notifications, setNotifications] = useState<NotificationItem[]>(() => {
+    const saved = localStorage.getItem('aifa_notifications');
+    return saved ? JSON.parse(saved) : INITIAL_NOTIFICATIONS;
+  });
+  const [activeToastNotification, setActiveToastNotification] = useState<NotificationItem | null>(null);
+  const [emailPreviewRequest, setEmailPreviewRequest] = useState<FactCheckRequest | null>(null);
+
   // Article detection
   const [isArticleHovered, setIsArticleHoveredState] = useState(false);
   const [isButtonHovered, setIsButtonHoveredState] = useState(false);
 
-  // Social post detection (Stage 4)
+  // Social post detection
   const [activeHoveredPostId, setActiveHoveredPostIdState] = useState<string | null>(null);
   const [activeVerifiedPost, setActiveVerifiedPost] = useState<SocialPost | null>(null);
 
@@ -58,15 +112,26 @@ export const AifaProvider: React.FC<{ children: React.ReactNode }> = ({ children
     ...MOCK_SOCIAL_VERIFICATIONS,
   });
 
-  // Request Fact-Check Workflow (Stage 4)
-  const [activeFactCheckClaim, setActiveFactCheckClaim] = useState<ClaimAnalysis | null>(null);
-  const [isSubmittingRequest, setIsSubmittingRequest] = useState(false);
-  const [currentRequest, setCurrentRequest] = useState<FactCheckRequest | null>(null);
-  const [submittedRequests, setSubmittedRequests] = useState<FactCheckRequest[]>([]);
-
   const hoverExitTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
   const postHoverExitTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
   const analysisTimersRef = useRef<ReturnType<typeof setTimeout>[]>([]);
+
+  // Sync state to local storage
+  useEffect(() => {
+    localStorage.setItem('aifa_user_profile', JSON.stringify(userProfile));
+  }, [userProfile]);
+
+  useEffect(() => {
+    localStorage.setItem('aifa_verification_history', JSON.stringify(verificationHistory));
+  }, [verificationHistory]);
+
+  useEffect(() => {
+    localStorage.setItem('aifa_fact_check_requests', JSON.stringify(submittedRequests));
+  }, [submittedRequests]);
+
+  useEffect(() => {
+    localStorage.setItem('aifa_notifications', JSON.stringify(notifications));
+  }, [notifications]);
 
   // Automatically detect news article when on an article detail route
   const detectedArticle = useMemo<DetectedArticleInfo | null>(() => {
@@ -153,6 +218,50 @@ export const AifaProvider: React.FC<{ children: React.ReactNode }> = ({ children
     setActiveFactCheckClaim(null);
   }, [currentLocation.pathname, activeTabId, refreshNonce, clearAnalysisTimers]);
 
+  // Auth Operations
+  const connectAccount = useCallback(() => {
+    setIsConnectingAccount(true);
+    setTimeout(() => {
+      setUserProfile({
+        name: 'AIFA Demo User',
+        email: 'demo@example.com',
+        avatar: '👤',
+        isConnected: true,
+        connectedAt: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
+      });
+      setIsConnectingAccount(false);
+      setSignInModalOpen(false);
+
+      // Trigger onboarding if not completed yet
+      if (!isOnboardingCompleted) {
+        setIsOnboardingOpen(true);
+      }
+    }, 700);
+  }, [isOnboardingCompleted]);
+
+  const disconnectAccount = useCallback(() => {
+    setUserProfile((prev) => ({
+      ...prev,
+      isConnected: false,
+      connectedAt: undefined,
+    }));
+  }, []);
+
+  // Onboarding Operations
+  const openOnboarding = useCallback(() => {
+    setIsOnboardingOpen(true);
+  }, []);
+
+  const closeOnboarding = useCallback(() => {
+    setIsOnboardingOpen(false);
+  }, []);
+
+  const completeOnboarding = useCallback(() => {
+    setIsOnboardingCompleted(true);
+    setIsOnboardingOpen(false);
+    localStorage.setItem('aifa_onboarding_completed', 'true');
+  }, []);
+
   // Article hover exit debouncer
   const setIsArticleHovered = useCallback((hovered: boolean) => {
     if (hovered) {
@@ -210,9 +319,15 @@ export const AifaProvider: React.FC<{ children: React.ReactNode }> = ({ children
     setIsExtensionEnabled((prev) => !prev);
   }, []);
 
-  // Trigger verification sequence for news article or social post
+  // Trigger verification sequence and append to history on completion
   const triggerVerification = useCallback(
     (socialPost?: SocialPost) => {
+      // Check auth connection: if not connected, prompt sign in
+      if (!userProfile.isConnected) {
+        setSignInModalOpen(true);
+        return;
+      }
+
       const targetPost = socialPost || detectedSocialPost;
       clearAnalysisTimers();
       setPanelMode('expanded');
@@ -259,7 +374,6 @@ export const AifaProvider: React.FC<{ children: React.ReactNode }> = ({ children
           setExpandedClaimIds([mockResult.claims[0].id]);
           setActiveClaimId(mockResult.claims[0].id);
 
-          // If first claim is an image claim, set active highlight box
           if (mockResult.claims[0].imageBoundingBoxId && targetPost?.imageOcr) {
             const box = targetPost.imageOcr.boundingBoxes.find(
               (b) => b.id === mockResult.claims[0].imageBoundingBoxId
@@ -267,11 +381,29 @@ export const AifaProvider: React.FC<{ children: React.ReactNode }> = ({ children
             if (box) setActiveImageHighlightBox(box);
           }
         }
+
+        // Save to Shared Verification History (Stage 5)
+        const historyRecord: VerificationHistoryRecord = {
+          id: `hist-${Date.now()}`,
+          contentId: mockResult.contentId,
+          contentType: mockResult.contentType,
+          headline: mockResult.headline,
+          platformName: mockResult.platformName,
+          sourceUrl: mockResult.sourceWebsite,
+          verifiedAt: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
+          overallAssessment: mockResult.overallAssessment,
+          overallLabel: mockResult.overallLabel,
+          summary: mockResult.summary,
+          claimsCount: mockResult.claims.length,
+          result: mockResult,
+        };
+
+        setVerificationHistory((prev) => [historyRecord, ...prev]);
       }, 3500);
 
       analysisTimersRef.current = [t1, t2, t3];
     },
-    [clearAnalysisTimers, detectedSocialPost, detectedArticle]
+    [clearAnalysisTimers, detectedSocialPost, detectedArticle, userProfile.isConnected]
   );
 
   const resetVerification = useCallback(() => {
@@ -325,7 +457,7 @@ export const AifaProvider: React.FC<{ children: React.ReactNode }> = ({ children
     }, 50);
   }, []);
 
-  // Synchronised Locate in Social Post (Caption or Image OCR region)
+  // Synchronised Locate in Social Post
   const locateClaimInSocialPost = useCallback(
     (claimId: string, locationPreference?: 'caption' | 'image') => {
       setActiveClaimId(claimId);
@@ -341,7 +473,6 @@ export const AifaProvider: React.FC<{ children: React.ReactNode }> = ({ children
         postElement.scrollIntoView({ behavior: 'smooth', block: 'center' });
       }
 
-      // Handle image OCR box highlight
       if (locationPreference === 'image' || claim.locationType === 'image') {
         const allPosts = [...MOCK_CONNECT_POSTS, ...MOCK_PULSE_POSTS];
         const post = allPosts.find((p) => p.id === claim.postId);
@@ -389,7 +520,7 @@ export const AifaProvider: React.FC<{ children: React.ReactNode }> = ({ children
           additionalNotes: notes,
           includeSupportingContent: includeSupporting,
           supportingContentSummary: `${verificationResult.summary} (Caption + Image OCR analyzed)`,
-          timestamp: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', second: '2-digit' }),
+          timestamp: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
           status: 'Submitted',
           lastUpdated: 'Just now',
         };
@@ -412,14 +543,149 @@ export const AifaProvider: React.FC<{ children: React.ReactNode }> = ({ children
     setPanelView('results');
   }, []);
 
+  // History Management Operations (Stage 5)
+  const deleteHistoryRecord = useCallback((id: string) => {
+    setVerificationHistory((prev) => prev.filter((r) => r.id !== id));
+  }, []);
+
+  const clearHistory = useCallback(() => {
+    setVerificationHistory([]);
+  }, []);
+
+  // Presenter Demo Controls: Advance Request Status (Stage 5)
+  const advanceRequestStatus = useCallback(
+    (requestId: string, newStatus: 'Under Review' | 'Completed') => {
+      let targetReq: FactCheckRequest | undefined;
+
+      setSubmittedRequests((prev) =>
+        prev.map((r) => {
+          if (r.id === requestId) {
+            const updated: FactCheckRequest = {
+              ...r,
+              status: newStatus,
+              lastUpdated: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
+              reviewOutcome:
+                newStatus === 'Completed'
+                  ? 'Official Sebenarnya.my Clarification Published: Fictional RM500 administrative levy refuted by Ministry of Finance records.'
+                  : undefined,
+            };
+            targetReq = updated;
+            return updated;
+          }
+          return r;
+        })
+      );
+
+      // If current open request matches, update it too
+      if (currentRequest && currentRequest.id === requestId) {
+        setCurrentRequest((prev) =>
+          prev
+            ? {
+                ...prev,
+                status: newStatus,
+                lastUpdated: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
+                reviewOutcome:
+                  newStatus === 'Completed'
+                    ? 'Official Sebenarnya.my Clarification Published: Fictional RM500 administrative levy refuted by Ministry of Finance records.'
+                    : undefined,
+              }
+            : null
+        );
+      }
+
+      // If marked Completed, generate Notification and Email preview according to preferences
+      if (newStatus === 'Completed' && targetReq) {
+        const notifItem: NotificationItem = {
+          id: `notif-${Date.now()}`,
+          title: 'AIFA Fact-Check Update',
+          message: `Your fact-check request ${targetReq.referenceNumber} has been completed and verified.`,
+          relatedRequestId: targetReq.id,
+          referenceNumber: targetReq.referenceNumber,
+          timestamp: 'Just now',
+          isRead: false,
+          type: 'request_completed',
+        };
+
+        setNotifications((prev) => [notifItem, ...prev]);
+
+        // Trigger in-app browser notification toast if enabled
+        if (notificationPreferences.browserNotifications) {
+          setActiveToastNotification(notifItem);
+        }
+      }
+    },
+    [currentRequest, notificationPreferences.browserNotifications]
+  );
+
+  const clearDemoRequests = useCallback(() => {
+    setSubmittedRequests([]);
+  }, []);
+
+  const resetAllDemoData = useCallback(() => {
+    localStorage.removeItem('aifa_user_profile');
+    localStorage.removeItem('aifa_verification_history');
+    localStorage.removeItem('aifa_fact_check_requests');
+    localStorage.removeItem('aifa_notifications');
+    localStorage.removeItem('aifa_onboarding_completed');
+
+    setUserProfile(INITIAL_USER_PROFILE);
+    setVerificationHistory(INITIAL_HISTORY);
+    setSubmittedRequests(INITIAL_REQUESTS);
+    setNotifications(INITIAL_NOTIFICATIONS);
+    setIsOnboardingCompleted(false);
+    resetVerification();
+  }, [resetVerification]);
+
+  // Notifications Operations
+  const markNotificationAsRead = useCallback((id: string) => {
+    setNotifications((prev) =>
+      prev.map((n) => (n.id === id ? { ...n, isRead: true } : n))
+    );
+  }, []);
+
+  const markAllNotificationsAsRead = useCallback(() => {
+    setNotifications((prev) => prev.map((n) => ({ ...n, isRead: true })));
+  }, []);
+
+  const dismissToastNotification = useCallback(() => {
+    setActiveToastNotification(null);
+  }, []);
+
+  const openEmailPreview = useCallback((req: FactCheckRequest) => {
+    setEmailPreviewRequest(req);
+  }, []);
+
+  const closeEmailPreview = useCallback(() => {
+    setEmailPreviewRequest(null);
+  }, []);
+
+  const updateNotificationPreferences = useCallback((prefs: Partial<NotificationPreferences>) => {
+    setNotificationPreferences((prev) => ({ ...prev, ...prefs }));
+  }, []);
+
+  const unreadNotificationCount = useMemo(() => {
+    return notifications.filter((n) => !n.isRead).length;
+  }, [notifications]);
+
   const isHighlighted =
     (isArticleHovered || isButtonHovered || activeHoveredPostId !== null) &&
     (detectedArticle !== null || detectedSocialPost !== null);
 
   const value = useMemo(
     () => ({
+      userProfile,
+      isConnectingAccount,
+      connectAccount,
+      disconnectAccount,
+      isSignInModalOpen,
+      setSignInModalOpen,
       isExtensionEnabled,
       toggleExtension,
+      isOnboardingCompleted,
+      isOnboardingOpen,
+      openOnboarding,
+      closeOnboarding,
+      completeOnboarding,
       detectedArticle,
       detectedSocialPost,
       activeHoveredPostId,
@@ -457,10 +723,39 @@ export const AifaProvider: React.FC<{ children: React.ReactNode }> = ({ children
       submittedRequests,
       viewRequestDetail,
       returnToResults,
+      verificationHistory,
+      deleteHistoryRecord,
+      clearHistory,
+      advanceRequestStatus,
+      clearDemoRequests,
+      resetAllDemoData,
+      notifications,
+      unreadNotificationCount,
+      markNotificationAsRead,
+      markAllNotificationsAsRead,
+      activeToastNotification,
+      dismissToastNotification,
+      emailPreviewRequest,
+      openEmailPreview,
+      closeEmailPreview,
+      notificationPreferences,
+      updateNotificationPreferences,
+      isSettingsModalOpen,
+      setSettingsModalOpen,
     }),
     [
+      userProfile,
+      isConnectingAccount,
+      connectAccount,
+      disconnectAccount,
+      isSignInModalOpen,
       isExtensionEnabled,
       toggleExtension,
+      isOnboardingCompleted,
+      isOnboardingOpen,
+      openOnboarding,
+      closeOnboarding,
+      completeOnboarding,
       detectedArticle,
       detectedSocialPost,
       activeHoveredPostId,
@@ -496,6 +791,24 @@ export const AifaProvider: React.FC<{ children: React.ReactNode }> = ({ children
       submittedRequests,
       viewRequestDetail,
       returnToResults,
+      verificationHistory,
+      deleteHistoryRecord,
+      clearHistory,
+      advanceRequestStatus,
+      clearDemoRequests,
+      resetAllDemoData,
+      notifications,
+      unreadNotificationCount,
+      markNotificationAsRead,
+      markAllNotificationsAsRead,
+      activeToastNotification,
+      dismissToastNotification,
+      emailPreviewRequest,
+      openEmailPreview,
+      closeEmailPreview,
+      notificationPreferences,
+      updateNotificationPreferences,
+      isSettingsModalOpen,
     ]
   );
 

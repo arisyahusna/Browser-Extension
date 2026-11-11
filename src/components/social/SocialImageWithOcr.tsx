@@ -88,3 +88,4 @@ export const SocialImageWithOcr: React.FC<SocialImageWithOcrProps> = ({
     </div>
   );
 };
+

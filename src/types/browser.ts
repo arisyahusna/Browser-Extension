@@ -3,7 +3,7 @@ export interface PageLocation {
   title: string;
   articleId?: string;
   category?: string;
-  platform?: 'news' | 'connectsocial' | 'pulsefeed';
+  platform?: 'news' | 'connectsocial' | 'pulsefeed' | 'dashboard';
   customUrl?: string;
 }
 

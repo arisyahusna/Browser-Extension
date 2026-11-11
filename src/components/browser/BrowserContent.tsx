@@ -8,6 +8,7 @@ import { NewsCategoryPage } from '../news/NewsCategoryPage';
 import { NewsFooter } from '../news/NewsFooter';
 import { ConnectSocialFeed } from '../social/ConnectSocialFeed';
 import { PulseFeed } from '../social/PulseFeed';
+import { SebenarnyaDashboard } from '../dashboard/SebenarnyaDashboard';
 import { AIFAVerificationPanel } from '../aifa/AIFAVerificationPanel';
 import { AIFAMinimizedFloatingButton } from '../aifa/AIFAMinimizedFloatingButton';
 
@@ -24,11 +25,16 @@ export const BrowserContent: React.FC = () => {
 
   const isConnectSocial = currentLocation.pathname.startsWith('/connectsocial');
   const isPulseFeed = currentLocation.pathname.startsWith('/pulsefeed');
+  const isDashboard = currentLocation.pathname.startsWith('/sebenarnya-dashboard');
   const isSocialPlatform = isConnectSocial || isPulseFeed;
 
   // Determine which page to render
   const renderCurrentView = () => {
     const { pathname, articleId } = currentLocation;
+
+    if (isDashboard) {
+      return <SebenarnyaDashboard />;
+    }
 
     if (isConnectSocial) {
       return <ConnectSocialFeed />;
@@ -82,8 +88,8 @@ export const BrowserContent: React.FC = () => {
           <div className="sticky top-0 left-0 right-0 h-0.5 bg-rose-600 animate-pulse z-50" />
         )}
 
-        {isSocialPlatform ? (
-          /* Render standalone social platform */
+        {isSocialPlatform || isDashboard ? (
+          /* Render standalone social platform or dashboard */
           renderCurrentView()
         ) : (
           /* Render news portal with its own header & footer */
