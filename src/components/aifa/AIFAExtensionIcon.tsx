@@ -1,5 +1,6 @@
 import React from 'react';
 import { ShieldCheck } from 'lucide-react';
+import { useAifa } from '../../context/AifaContext';
 
 interface AIFAExtensionIconProps {
   isOpen: boolean;
@@ -7,12 +8,20 @@ interface AIFAExtensionIconProps {
 }
 
 export const AIFAExtensionIcon: React.FC<AIFAExtensionIconProps> = ({ isOpen, onClick }) => {
+  const { detectedArticle } = useAifa();
+
+  const isArticleDetected = Boolean(detectedArticle);
+
   return (
     <button
       type="button"
       onClick={onClick}
       aria-label="AIFA Fact-Checking Assistant Extension"
-      title="AIFA Fact-Checking Assistant (Sebenarnya.my)"
+      title={
+        isArticleDetected
+          ? `AIFA: Article detected ("${detectedArticle?.title}")`
+          : 'AIFA Fact-Checking Assistant (Sebenarnya.my)'
+      }
       className={`relative group flex items-center justify-center w-8 h-8 rounded-full transition-all duration-150 ${
         isOpen
           ? 'bg-rose-100 ring-2 ring-[#D93043]/30 text-[#D93043]'
@@ -27,8 +36,18 @@ export const AIFAExtensionIcon: React.FC<AIFAExtensionIconProps> = ({ isOpen, on
           }`}
           strokeWidth={2.2}
         />
-        {/* Active badge dot */}
-        <span className="absolute -top-1 -right-1 w-2 h-2 rounded-full bg-[#D93043] ring-1.5 ring-white" />
+
+        {/* Dynamic Status Badge */}
+        {isArticleDetected ? (
+          /* Active Green/Red Pulse Indicator when article is detected */
+          <span className="absolute -top-1 -right-1 flex h-2.5 w-2.5">
+            <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75" />
+            <span className="relative inline-flex rounded-full h-2.5 w-2.5 bg-emerald-500 ring-1.5 ring-white" />
+          </span>
+        ) : (
+          /* Standard subtle badge */
+          <span className="absolute -top-1 -right-1 w-2 h-2 rounded-full bg-[#D93043] ring-1.5 ring-white" />
+        )}
       </div>
     </button>
   );

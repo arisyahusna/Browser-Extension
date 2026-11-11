@@ -33,3 +33,4 @@ export interface TrendingItem {
   slug: string;
   viewsLabel: string;
 }
+

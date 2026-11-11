@@ -1,7 +1,9 @@
-import React, { useState } from 'react';
+import React, { useState, useRef } from 'react';
 import { NewsArticle } from '../../types/news';
 import { MOCK_ARTICLES, MOCK_TRENDING } from '../../data/mockArticles';
 import { useBrowser } from '../../context/BrowserContext';
+import { useAIFAArticleDetection } from '../../hooks/useAIFAArticleDetection';
+import { AIFAArticleOverlay } from '../aifa/AIFAArticleOverlay';
 import {
   Clock,
   Bookmark,
@@ -21,6 +23,12 @@ export const NewsArticlePage: React.FC<NewsArticlePageProps> = ({ article }) => 
   const { navigate } = useBrowser();
   const [copiedLink, setCopiedLink] = useState(false);
   const [isBookmarked, setIsBookmarked] = useState(false);
+
+  const articleRef = useRef<HTMLElement>(null);
+  const { isHighlighted } = useAIFAArticleDetection({
+    articleRef,
+    articleId: article.id,
+  });
 
   const relatedArticles = MOCK_ARTICLES.filter((a) =>
     article.relatedArticleIds.includes(a.id)
@@ -85,12 +93,19 @@ export const NewsArticlePage: React.FC<NewsArticlePageProps> = ({ article }) => 
               MUST NOT be inside this container.
             */}
             <article
+              ref={articleRef}
               id={article.id}
               data-aifa-detectable="true"
               data-article-id={article.id}
               data-article-slug={article.slug}
-              className="space-y-6"
+              className={`space-y-6 relative transition-all duration-200 p-3 -m-3 rounded-xl ${
+                isHighlighted
+                  ? 'outline-2 outline-[#D93043] outline-offset-4 bg-[#D93043]/[0.015]'
+                  : 'outline-2 outline-transparent outline-offset-4'
+              }`}
             >
+              {/* AIFA Smart Detection & Floating Action Overlay (Stage 2) */}
+              <AIFAArticleOverlay />
               {/* Category & Metadata header */}
               <div className="space-y-3">
                 <div className="flex items-center gap-2">

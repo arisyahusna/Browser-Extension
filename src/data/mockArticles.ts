@@ -290,3 +290,4 @@ export const CATEGORIES = [
   { id: 'technology', label: 'Technology', path: '/category/technology' },
   { id: 'lifestyle', label: 'Lifestyle', path: '/category/lifestyle' },
 ];
+

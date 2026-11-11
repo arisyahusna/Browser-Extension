@@ -32,4 +32,6 @@ export interface BrowserContextType {
   isAifaPopupOpen: boolean;
   setAifaPopupOpen: (open: boolean) => void;
   toggleAifaPopup: () => void;
+  refreshNonce: number;
 }
+

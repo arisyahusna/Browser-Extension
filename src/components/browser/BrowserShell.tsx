@@ -17,3 +17,4 @@ export const BrowserShell: React.FC = () => {
     </div>
   );
 };
+

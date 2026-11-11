@@ -90,3 +90,4 @@ export const BrowserTabBar: React.FC = () => {
     </div>
   );
 };
+

@@ -114,3 +114,4 @@ This project is a high-fidelity, client-facing web simulation of a Google Chrome
    ```bash
    npm run build
    ```
+
