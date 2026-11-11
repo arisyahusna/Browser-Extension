@@ -99,11 +99,23 @@ export const AIFAPopupPlaceholder: React.FC<AIFAPopupPlaceholderProps> = ({ isOp
             </div>
 
             {verificationRequest?.status === 'requested' ? (
-              <div className="rounded-lg bg-emerald-50 border border-emerald-200 p-2.5 text-xs text-emerald-800 flex items-center gap-2">
-                <CheckCircle2 className="w-4 h-4 text-emerald-600 shrink-0" />
-                <span className="text-[11px] leading-tight">
-                  Verification requested. Side panel will connect in Stage 3.
-                </span>
+              <div className="space-y-2">
+                <div className="rounded-lg bg-emerald-50 border border-emerald-200 p-2.5 text-xs text-emerald-800 flex items-center gap-2">
+                  <CheckCircle2 className="w-4 h-4 text-emerald-600 shrink-0" />
+                  <span className="text-[11px] leading-tight font-medium">
+                    AIFA Verification Panel is active on the right.
+                  </span>
+                </div>
+                <button
+                  type="button"
+                  onClick={() => {
+                    onClose();
+                  }}
+                  className="w-full flex items-center justify-center gap-1.5 py-1.5 px-3 bg-slate-900 text-white text-xs font-semibold rounded-lg shadow-xs hover:bg-slate-800 transition-colors cursor-pointer"
+                >
+                  <span>View Side Panel</span>
+                  <ArrowRight className="w-3.5 h-3.5" />
+                </button>
               </div>
             ) : (
               <button

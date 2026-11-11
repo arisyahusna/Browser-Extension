@@ -2,6 +2,7 @@ import React, { useState, useRef } from 'react';
 import { NewsArticle } from '../../types/news';
 import { MOCK_ARTICLES, MOCK_TRENDING } from '../../data/mockArticles';
 import { useBrowser } from '../../context/BrowserContext';
+import { useAifa } from '../../context/AifaContext';
 import { useAIFAArticleDetection } from '../../hooks/useAIFAArticleDetection';
 import { AIFAArticleOverlay } from '../aifa/AIFAArticleOverlay';
 import {
@@ -21,6 +22,7 @@ interface NewsArticlePageProps {
 
 export const NewsArticlePage: React.FC<NewsArticlePageProps> = ({ article }) => {
   const { navigate } = useBrowser();
+  const { activeClaimId, verificationResult, locateClaimInArticle } = useAifa();
   const [copiedLink, setCopiedLink] = useState(false);
   const [isBookmarked, setIsBookmarked] = useState(false);
 
@@ -29,6 +31,47 @@ export const NewsArticlePage: React.FC<NewsArticlePageProps> = ({ article }) => 
     articleRef,
     articleId: article.id,
   });
+
+  const renderParagraphContent = (paragraphId: string, text: string) => {
+    if (!verificationResult || !verificationResult.claims) {
+      return text;
+    }
+
+    const claim = verificationResult.claims.find((c) => c.paragraphId === paragraphId);
+    if (!claim) return text;
+
+    const lowerText = text.toLowerCase();
+    const lowerClaim = claim.exactArticleText.toLowerCase();
+    const index = lowerText.indexOf(lowerClaim);
+
+    if (index === -1) {
+      return text;
+    }
+
+    const before = text.slice(0, index);
+    const matched = text.slice(index, index + claim.exactArticleText.length);
+    const after = text.slice(index + claim.exactArticleText.length);
+    const isSelected = activeClaimId === claim.id;
+
+    return (
+      <>
+        {before}
+        <span
+          data-aifa-claim-id={claim.id}
+          onClick={() => locateClaimInArticle(claim.id)}
+          title={`AIFA Claim ${claim.claimNumber}: ${claim.verdictLabel} (Click to inspect in verification panel)`}
+          className={`transition-all duration-200 cursor-pointer rounded px-1 py-0.5 inline ${
+            isSelected
+              ? 'bg-amber-200/90 text-slate-900 border-b-2 border-amber-600 shadow-xs ring-2 ring-amber-400/80 font-medium'
+              : 'bg-amber-100/70 hover:bg-amber-200/80 border-b border-amber-400 text-slate-900'
+          }`}
+        >
+          {matched}
+        </span>
+        {after}
+      </>
+    );
+  };
 
   const relatedArticles = MOCK_ARTICLES.filter((a) =>
     article.relatedArticleIds.includes(a.id)
@@ -203,7 +246,7 @@ export const NewsArticlePage: React.FC<NewsArticlePageProps> = ({ article }) => 
                       data-paragraph-id={item.id}
                       className="text-base sm:text-[17px] leading-[1.8] text-slate-700 font-normal tracking-normal"
                     >
-                      {item.text}
+                      {renderParagraphContent(item.id, item.text)}
                     </p>
                   );
                 })}
