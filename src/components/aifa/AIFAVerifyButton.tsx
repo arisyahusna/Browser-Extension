@@ -41,7 +41,7 @@ export const AIFAVerifyButton: React.FC = () => {
         /* Floating "Verify with AIFA" Action Button */
         <button
           type="button"
-          onClick={triggerVerification}
+          onClick={() => triggerVerification()}
           className="group flex items-center gap-2 px-3.5 py-2 bg-[#D93043] hover:bg-[#C02638] active:bg-[#A81F2F] text-white text-xs font-semibold rounded-xl shadow-[0_4px_16px_rgba(217,48,67,0.32)] hover:shadow-[0_6px_20px_rgba(217,48,67,0.42)] active:scale-98 transition-all duration-150 border border-white/20 focus:outline-none focus:ring-2 focus:ring-[#D93043]/50 cursor-pointer"
           aria-label="Verify this article with AIFA"
         >

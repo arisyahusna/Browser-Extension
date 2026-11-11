@@ -7,8 +7,11 @@ import {
   XCircle,
   AlertTriangle,
   HelpCircle,
+  Scan,
+  Send,
 } from 'lucide-react';
 import { ClaimAnalysis, ClaimVerdict } from '../../types/aifa';
+import { useAifa } from '../../context/AifaContext';
 
 interface AIFAClaimCardProps {
   claim: ClaimAnalysis;
@@ -25,6 +28,8 @@ export const AIFAClaimCard: React.FC<AIFAClaimCardProps> = ({
   onToggle,
   onLocate,
 }) => {
+  const { openFactCheckForm, locateClaimInSocialPost } = useAifa();
+
   const getVerdictBadge = (verdict: ClaimVerdict) => {
     switch (verdict) {
       case 'supported':
@@ -58,6 +63,8 @@ export const AIFAClaimCard: React.FC<AIFAClaimCardProps> = ({
         );
     }
   };
+
+  const isSocialClaim = Boolean(claim.postId);
 
   return (
     <div
@@ -137,24 +144,93 @@ export const AIFAClaimCard: React.FC<AIFAClaimCardProps> = ({
             )}
           </div>
 
-          {/* Action Row: Locate in Article */}
-          <div className="pt-1 flex items-center justify-between gap-2">
-            <button
-              type="button"
-              onClick={(e) => {
-                e.stopPropagation();
-                onLocate();
-              }}
-              className="flex items-center gap-1.5 px-2.5 py-1.5 rounded-lg bg-amber-50 hover:bg-amber-100 text-amber-900 border border-amber-200 font-medium text-[11px] transition-colors cursor-pointer"
-              title="Locate and highlight this claim in the article"
-            >
-              <MapPin className="w-3.5 h-3.5 text-amber-600" />
-              <span>Locate in Article</span>
-            </button>
+          {/* Action Row */}
+          <div className="pt-2 border-t border-slate-100 flex flex-wrap items-center justify-between gap-2">
+            <div className="flex items-center gap-1.5">
+              {isSocialClaim ? (
+                <>
+                  {claim.locationType === 'image' ? (
+                    <button
+                      type="button"
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        locateClaimInSocialPost(claim.id, 'image');
+                      }}
+                      className="flex items-center gap-1.5 px-2.5 py-1.5 rounded-lg bg-amber-50 hover:bg-amber-100 text-amber-900 border border-amber-200 font-medium text-[11px] transition-colors cursor-pointer"
+                    >
+                      <Scan className="w-3.5 h-3.5 text-amber-600" />
+                      <span>Locate in Image (OCR)</span>
+                    </button>
+                  ) : claim.locationType === 'both' ? (
+                    <div className="flex items-center gap-1">
+                      <button
+                        type="button"
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          locateClaimInSocialPost(claim.id, 'caption');
+                        }}
+                        className="flex items-center gap-1 px-2 py-1 rounded bg-amber-50 hover:bg-amber-100 text-amber-900 border border-amber-200 font-medium text-[10.5px] transition-colors"
+                      >
+                        <MapPin className="w-3 h-3 text-amber-600" />
+                        <span>In Caption</span>
+                      </button>
+                      <button
+                        type="button"
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          locateClaimInSocialPost(claim.id, 'image');
+                        }}
+                        className="flex items-center gap-1 px-2 py-1 rounded bg-amber-50 hover:bg-amber-100 text-amber-900 border border-amber-200 font-medium text-[10.5px] transition-colors"
+                      >
+                        <Scan className="w-3 h-3 text-amber-600" />
+                        <span>In Image (OCR)</span>
+                      </button>
+                    </div>
+                  ) : (
+                    <button
+                      type="button"
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        locateClaimInSocialPost(claim.id, 'caption');
+                      }}
+                      className="flex items-center gap-1.5 px-2.5 py-1.5 rounded-lg bg-amber-50 hover:bg-amber-100 text-amber-900 border border-amber-200 font-medium text-[11px] transition-colors cursor-pointer"
+                    >
+                      <MapPin className="w-3.5 h-3.5 text-amber-600" />
+                      <span>Locate in Post</span>
+                    </button>
+                  )}
+                </>
+              ) : (
+                <button
+                  type="button"
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    onLocate();
+                  }}
+                  className="flex items-center gap-1.5 px-2.5 py-1.5 rounded-lg bg-amber-50 hover:bg-amber-100 text-amber-900 border border-amber-200 font-medium text-[11px] transition-colors cursor-pointer"
+                  title="Locate and highlight this claim in the article"
+                >
+                  <MapPin className="w-3.5 h-3.5 text-amber-600" />
+                  <span>Locate in Article</span>
+                </button>
+              )}
+            </div>
 
-            <span className="text-[10px] text-slate-400">
-              Matches paragraph {claim.paragraphId}
-            </span>
+            {/* Request Fact-Check Button for Unverified Claims */}
+            {claim.verdict === 'unverified' && (
+              <button
+                type="button"
+                onClick={(e) => {
+                  e.stopPropagation();
+                  openFactCheckForm(claim);
+                }}
+                className="flex items-center gap-1.5 px-2.5 py-1.5 rounded-lg bg-rose-50 hover:bg-rose-100 text-[#D93043] border border-rose-200 font-semibold text-[11px] transition-colors cursor-pointer"
+                title="Request official fact-checking by Sebenarnya.my"
+              >
+                <Send className="w-3 h-3" />
+                <span>Request Fact-Check</span>
+              </button>
+            )}
           </div>
         </div>
       )}

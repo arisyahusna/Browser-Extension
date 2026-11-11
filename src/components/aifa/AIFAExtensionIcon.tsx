@@ -8,9 +8,9 @@ interface AIFAExtensionIconProps {
 }
 
 export const AIFAExtensionIcon: React.FC<AIFAExtensionIconProps> = ({ isOpen, onClick }) => {
-  const { detectedArticle } = useAifa();
+  const { detectedArticle, detectedSocialPost } = useAifa();
 
-  const isArticleDetected = Boolean(detectedArticle);
+  const isDetected = Boolean(detectedArticle || detectedSocialPost);
 
   return (
     <button
@@ -18,7 +18,9 @@ export const AIFAExtensionIcon: React.FC<AIFAExtensionIconProps> = ({ isOpen, on
       onClick={onClick}
       aria-label="AIFA Fact-Checking Assistant Extension"
       title={
-        isArticleDetected
+        detectedSocialPost
+          ? `AIFA: Social post detected on ${detectedSocialPost.platform}`
+          : detectedArticle
           ? `AIFA: Article detected ("${detectedArticle?.title}")`
           : 'AIFA Fact-Checking Assistant (Sebenarnya.my)'
       }
@@ -38,8 +40,8 @@ export const AIFAExtensionIcon: React.FC<AIFAExtensionIconProps> = ({ isOpen, on
         />
 
         {/* Dynamic Status Badge */}
-        {isArticleDetected ? (
-          /* Active Green/Red Pulse Indicator when article is detected */
+        {isDetected ? (
+          /* Active Green/Red Pulse Indicator when article or social post is detected */
           <span className="absolute -top-1 -right-1 flex h-2.5 w-2.5">
             <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75" />
             <span className="relative inline-flex rounded-full h-2.5 w-2.5 bg-emerald-500 ring-1.5 ring-white" />

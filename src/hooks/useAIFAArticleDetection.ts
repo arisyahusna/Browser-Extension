@@ -14,7 +14,6 @@ export const useAIFAArticleDetection = ({
     isArticleHovered,
     setIsArticleHovered,
     isHighlighted,
-    verificationRequest,
     triggerVerification,
     resetVerification,
     isExtensionEnabled,
@@ -47,7 +46,6 @@ export const useAIFAArticleDetection = ({
     detectedArticle,
     isArticleHovered,
     isHighlighted,
-    verificationRequest,
     triggerVerification,
     resetVerification,
   };

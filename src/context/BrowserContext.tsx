@@ -51,6 +51,15 @@ export const BrowserProvider: React.FC<{ children: React.ReactNode }> = ({ child
   }, [activeTab]);
 
   const displayUrl = useMemo(() => {
+    if (currentLocation.customUrl) {
+      return currentLocation.customUrl;
+    }
+    if (currentLocation.pathname.startsWith('/connectsocial')) {
+      return 'https://connectsocial.example/feed';
+    }
+    if (currentLocation.pathname.startsWith('/pulsefeed')) {
+      return 'https://pulsefeed.example/home';
+    }
     const path = currentLocation.pathname === '/' ? '' : currentLocation.pathname;
     return `${BASE_URL}${path}`;
   }, [currentLocation]);

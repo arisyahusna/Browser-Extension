@@ -1,8 +1,10 @@
 export interface PageLocation {
-  pathname: string; // e.g. '/', '/articles/viral-rm500-annual-payment-claim', '/category/technology'
+  pathname: string; // e.g. '/', '/articles/viral-rm500-annual-payment-claim', '/category/technology', '/connectsocial', '/pulsefeed'
   title: string;
   articleId?: string;
   category?: string;
+  platform?: 'news' | 'connectsocial' | 'pulsefeed';
+  customUrl?: string;
 }
 
 export interface Tab {

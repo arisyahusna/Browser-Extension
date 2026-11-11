@@ -6,6 +6,8 @@ import { NewsHomepage } from '../news/NewsHomepage';
 import { NewsArticlePage } from '../news/NewsArticlePage';
 import { NewsCategoryPage } from '../news/NewsCategoryPage';
 import { NewsFooter } from '../news/NewsFooter';
+import { ConnectSocialFeed } from '../social/ConnectSocialFeed';
+import { PulseFeed } from '../social/PulseFeed';
 import { AIFAVerificationPanel } from '../aifa/AIFAVerificationPanel';
 import { AIFAMinimizedFloatingButton } from '../aifa/AIFAMinimizedFloatingButton';
 
@@ -20,9 +22,21 @@ export const BrowserContent: React.FC = () => {
     }
   }, [currentLocation.pathname, activeTabId]);
 
+  const isConnectSocial = currentLocation.pathname.startsWith('/connectsocial');
+  const isPulseFeed = currentLocation.pathname.startsWith('/pulsefeed');
+  const isSocialPlatform = isConnectSocial || isPulseFeed;
+
   // Determine which page to render
   const renderCurrentView = () => {
     const { pathname, articleId } = currentLocation;
+
+    if (isConnectSocial) {
+      return <ConnectSocialFeed />;
+    }
+
+    if (isPulseFeed) {
+      return <PulseFeed />;
+    }
 
     if (pathname.startsWith('/articles/')) {
       const slug = pathname.replace('/articles/', '');
@@ -48,15 +62,17 @@ export const BrowserContent: React.FC = () => {
       : 'home');
 
   return (
-    <div className="flex-1 w-full h-[calc(100vh-84px)] flex flex-row overflow-hidden relative">
+    <div className="flex-1 w-full h-[calc(100vh-112px)] flex flex-row overflow-hidden relative">
       {/* 
-        Website Content Viewport:
-        Scrolls independently beneath the browser tab bar & navigation bar.
+        Website / Platform Content Viewport:
+        Scrolls independently beneath the browser tab bar, toolbar & bookmarks bar.
         Smoothly resizes to accommodate the AIFA verification panel when opened.
       */}
       <div
         ref={scrollContainerRef}
-        className="flex-1 h-full overflow-y-auto overflow-x-hidden relative bg-white select-text scroll-smooth"
+        className={`flex-1 h-full overflow-y-auto overflow-x-hidden relative select-text scroll-smooth ${
+          isConnectSocial ? 'bg-[#F0F2F5]' : 'bg-white'
+        }`}
         style={{
           scrollbarGutter: 'stable',
         }}
@@ -66,20 +82,23 @@ export const BrowserContent: React.FC = () => {
           <div className="sticky top-0 left-0 right-0 h-0.5 bg-rose-600 animate-pulse z-50" />
         )}
 
-        {/* Website Header */}
-        <NewsHeader currentCategory={currentCategory} />
-
-        {/* Main Website Page Content */}
-        <main className="min-h-[calc(100vh-280px)]">{renderCurrentView()}</main>
-
-        {/* Website Footer */}
-        <NewsFooter />
+        {isSocialPlatform ? (
+          /* Render standalone social platform */
+          renderCurrentView()
+        ) : (
+          /* Render news portal with its own header & footer */
+          <>
+            <NewsHeader currentCategory={currentCategory} />
+            <main className="min-h-[calc(100vh-280px)]">{renderCurrentView()}</main>
+            <NewsFooter />
+          </>
+        )}
       </div>
 
-      {/* Stage 3: AIFA Verification Panel (Right-side slide-in drawer) */}
+      {/* Stage 3 & 4: AIFA Verification Panel (Right-side drawer) */}
       <AIFAVerificationPanel />
 
-      {/* Stage 3: Minimized Floating Action Pill */}
+      {/* Stage 3 & 4: Minimized Floating Action Pill */}
       <AIFAMinimizedFloatingButton />
     </div>
   );

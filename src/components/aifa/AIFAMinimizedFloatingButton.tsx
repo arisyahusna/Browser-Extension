@@ -27,3 +27,4 @@ export const AIFAMinimizedFloatingButton: React.FC = () => {
     </div>
   );
 };
+

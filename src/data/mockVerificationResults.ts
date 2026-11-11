@@ -1,10 +1,13 @@
-import { ArticleVerificationResult } from '../types/aifa';
+import { VerificationResult } from '../types/aifa';
 
-export const MOCK_VERIFICATION_RESULTS: Record<string, ArticleVerificationResult> = {
+export const MOCK_VERIFICATION_RESULTS: Record<string, VerificationResult> = {
   'art-rm500-claim': {
-    articleId: 'art-rm500-claim',
+    contentId: 'art-rm500-claim',
+    contentType: 'article',
     headline: 'Viral RM500 Annual Payment Claim Sparks Questions Among Malaysians',
+    platformName: 'Malaysia News Daily',
     sourceWebsite: 'malaysianews-demo.my',
+    authorName: 'Farid Zakaria',
     publishedAt: '11 Nov 2026, 2:45 PM',
     verifiedAt: 'Just now (Simulated)',
     overallAssessment: 'unverified',
@@ -68,9 +71,12 @@ export const MOCK_VERIFICATION_RESULTS: Record<string, ArticleVerificationResult
   },
 
   'art-ai-services': {
-    articleId: 'art-ai-services',
+    contentId: 'art-ai-services',
+    contentType: 'article',
     headline: "Malaysia's Digital Economy Sees Growing Interest in AI-Powered Services",
+    platformName: 'Malaysia News Daily',
     sourceWebsite: 'malaysianews-demo.my',
+    authorName: 'Nadia S. Ariff',
     publishedAt: '11 Nov 2026, 11:20 AM',
     verifiedAt: 'Just now (Simulated)',
     overallAssessment: 'supported',
@@ -118,9 +124,12 @@ export const MOCK_VERIFICATION_RESULTS: Record<string, ArticleVerificationResult
   },
 
   'art-verify-info': {
-    articleId: 'art-verify-info',
+    contentId: 'art-verify-info',
+    contentType: 'article',
     headline: 'Experts Encourage Malaysians to Verify Information Before Sharing Online',
+    platformName: 'Malaysia News Daily',
     sourceWebsite: 'malaysianews-demo.my',
+    authorName: 'Kenneth Lee',
     publishedAt: '10 Nov 2026, 5:10 PM',
     verifiedAt: 'Just now (Simulated)',
     overallAssessment: 'supported',

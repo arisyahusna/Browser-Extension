@@ -29,6 +29,23 @@ export const BrowserToolbar: React.FC = () => {
   const [showExtensionMenu, setShowExtensionMenu] = useState(false);
   const [showChromeMenu, setShowChromeMenu] = useState(false);
 
+  const parsedUrl = React.useMemo(() => {
+    try {
+      const url = new URL(displayUrl);
+      return {
+        protocol: `${url.protocol}//`,
+        host: url.host,
+        pathname: url.pathname === '/' ? '' : url.pathname,
+      };
+    } catch {
+      return {
+        protocol: 'https://',
+        host: 'www.malaysianews-demo.my',
+        pathname: '',
+      };
+    }
+  }, [displayUrl]);
+
   return (
     <div className="h-11 bg-white border-b border-[#E0E2E6] flex items-center px-3 gap-2 relative z-30 select-none shadow-[0_1px_2px_rgba(0,0,0,0.03)]">
       {/* Navigation Controls: Back, Forward, Refresh */}
@@ -87,9 +104,9 @@ export const BrowserToolbar: React.FC = () => {
 
         {/* Address text */}
         <div className="flex-1 truncate font-mono text-[11.5px] text-slate-700 select-all cursor-text">
-          <span className="text-slate-400">https://</span>
-          <span className="font-semibold text-slate-800">www.malaysianews-demo.my</span>
-          <span className="text-slate-600">{displayUrl.replace('https://www.malaysianews-demo.my', '') || '/'}</span>
+          <span className="text-slate-400">{parsedUrl.protocol}</span>
+          <span className="font-semibold text-slate-800">{parsedUrl.host}</span>
+          <span className="text-slate-600">{parsedUrl.pathname}</span>
         </div>
 
         {/* Omnibox right action icons */}

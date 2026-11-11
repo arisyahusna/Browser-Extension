@@ -9,7 +9,13 @@ interface AIFAPopupPlaceholderProps {
 
 export const AIFAPopupPlaceholder: React.FC<AIFAPopupPlaceholderProps> = ({ isOpen, onClose }) => {
   const popupRef = useRef<HTMLDivElement>(null);
-  const { detectedArticle, verificationRequest, triggerVerification } = useAifa();
+  const {
+    detectedArticle,
+    detectedSocialPost,
+    triggerVerification,
+    panelMode,
+    openPanel,
+  } = useAifa();
 
   // Close on outside click
   useEffect(() => {
@@ -55,7 +61,7 @@ export const AIFAPopupPlaceholder: React.FC<AIFAPopupPlaceholderProps> = ({ isOp
             <h3 className="text-xs font-bold text-[#171B26] tracking-tight flex items-center gap-1.5">
               AIFA Assistant
               <span className="text-[10px] font-medium px-1.5 py-0.2 rounded bg-rose-100 text-[#D93043]">
-                Stage 2
+                Stage 4
               </span>
             </h3>
             <p className="text-[10px] text-[#667085] leading-none">by Sebenarnya.my</p>
@@ -71,9 +77,71 @@ export const AIFAPopupPlaceholder: React.FC<AIFAPopupPlaceholderProps> = ({ isOp
         </button>
       </div>
 
-      {/* Extension Body: Contextual Status based on Stage 2 requirements */}
+      {/* Extension Body */}
       <div className="p-4 space-y-3.5">
-        {detectedArticle ? (
+        {detectedSocialPost ? (
+          /* Contextual Status: Social Post Detected */
+          <div className="space-y-3">
+            <div>
+              <div className="flex items-center gap-1.5 text-xs font-bold text-[#171B26]">
+                <span className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse" />
+                <span>AIFA is ready</span>
+              </div>
+              <p className="text-xs text-[#667085] mt-1 leading-relaxed">
+                Social post detected on {detectedSocialPost.platform}.
+              </p>
+            </div>
+
+            <div className="rounded-lg bg-[#FAFBFD] border border-slate-200/80 p-3 space-y-1.5">
+              <span className="text-[10px] font-bold uppercase tracking-wider text-rose-700 bg-rose-50 px-1.5 py-0.5 rounded">
+                {detectedSocialPost.author.name}
+              </span>
+              <p className="text-xs font-medium text-slate-800 line-clamp-2 leading-snug">
+                "{detectedSocialPost.caption}"
+              </p>
+              {detectedSocialPost.imageOcr && (
+                <span className="text-[10px] text-amber-700 font-mono block pt-1">
+                  Attached image contains readable text (OCR ready)
+                </span>
+              )}
+            </div>
+
+            {panelMode === 'expanded' ? (
+              <div className="space-y-2">
+                <div className="rounded-lg bg-emerald-50 border border-emerald-200 p-2 text-xs text-emerald-800 flex items-center gap-2">
+                  <CheckCircle2 className="w-4 h-4 text-emerald-600 shrink-0" />
+                  <span className="text-[11px] font-medium leading-tight">
+                    Verification panel is active on the right.
+                  </span>
+                </div>
+                <button
+                  type="button"
+                  onClick={() => {
+                    openPanel();
+                    onClose();
+                  }}
+                  className="w-full flex items-center justify-center gap-1.5 py-1.5 px-3 bg-slate-900 text-white text-xs font-semibold rounded-lg shadow-xs hover:bg-slate-800 transition-colors cursor-pointer"
+                >
+                  <span>Focus Side Panel</span>
+                  <ArrowRight className="w-3.5 h-3.5" />
+                </button>
+              </div>
+            ) : (
+              <button
+                type="button"
+                onClick={() => {
+                  triggerVerification(detectedSocialPost);
+                  onClose();
+                }}
+                className="w-full flex items-center justify-center gap-2 py-2 px-3 bg-[#D93043] hover:bg-[#C02638] text-white text-xs font-semibold rounded-lg shadow-sm transition-colors cursor-pointer"
+              >
+                <ShieldCheck className="w-3.5 h-3.5" />
+                <span>Verify this Post with AIFA</span>
+                <ArrowRight className="w-3.5 h-3.5" />
+              </button>
+            )}
+          </div>
+        ) : detectedArticle ? (
           /* Contextual Status: Article Detected */
           <div className="space-y-3">
             <div>
@@ -93,27 +161,25 @@ export const AIFAPopupPlaceholder: React.FC<AIFAPopupPlaceholderProps> = ({ isOp
               <h4 className="text-xs font-semibold text-slate-900 line-clamp-2 leading-snug">
                 {detectedArticle.title}
               </h4>
-              <p className="text-[10px] text-slate-400">
-                Container target: <code className="text-rose-700">data-aifa-detectable="true"</code>
-              </p>
             </div>
 
-            {verificationRequest?.status === 'requested' ? (
+            {panelMode === 'expanded' ? (
               <div className="space-y-2">
-                <div className="rounded-lg bg-emerald-50 border border-emerald-200 p-2.5 text-xs text-emerald-800 flex items-center gap-2">
+                <div className="rounded-lg bg-emerald-50 border border-emerald-200 p-2 text-xs text-emerald-800 flex items-center gap-2">
                   <CheckCircle2 className="w-4 h-4 text-emerald-600 shrink-0" />
-                  <span className="text-[11px] leading-tight font-medium">
-                    AIFA Verification Panel is active on the right.
+                  <span className="text-[11px] font-medium leading-tight">
+                    Verification panel is active on the right.
                   </span>
                 </div>
                 <button
                   type="button"
                   onClick={() => {
+                    openPanel();
                     onClose();
                   }}
                   className="w-full flex items-center justify-center gap-1.5 py-1.5 px-3 bg-slate-900 text-white text-xs font-semibold rounded-lg shadow-xs hover:bg-slate-800 transition-colors cursor-pointer"
                 >
-                  <span>View Side Panel</span>
+                  <span>Focus Side Panel</span>
                   <ArrowRight className="w-3.5 h-3.5" />
                 </button>
               </div>
@@ -133,15 +199,15 @@ export const AIFAPopupPlaceholder: React.FC<AIFAPopupPlaceholderProps> = ({ isOp
             )}
           </div>
         ) : (
-          /* Contextual Status: No Article Selected (e.g. Homepage / Category) */
+          /* Contextual Status: No Content Selected */
           <div className="space-y-3">
             <div>
               <div className="flex items-center gap-1.5 text-xs font-bold text-[#171B26]">
                 <span className="w-2 h-2 rounded-full bg-slate-400" />
-                <span>No article selected</span>
+                <span>No content selected</span>
               </div>
               <p className="text-xs text-[#667085] mt-1 leading-relaxed">
-                Open a news article to begin verification.
+                Open a news article or hover over a social media post to begin verification.
               </p>
             </div>
 
@@ -149,9 +215,9 @@ export const AIFAPopupPlaceholder: React.FC<AIFAPopupPlaceholderProps> = ({ isOp
               <div className="flex items-start gap-2">
                 <Sparkles className="w-4 h-4 text-slate-400 shrink-0 mt-0.5" />
                 <div className="text-[11px] text-slate-600 leading-normal">
-                  <span className="font-semibold text-slate-800">Smart Article Detection Active</span>
+                  <span className="font-semibold text-slate-800">Multi-Platform Scanner Active</span>
                   <p className="mt-0.5">
-                    AIFA automatically identifies verified news articles when you navigate to them.
+                    AIFA automatically identifies news stories, social posts, and embedded image text.
                   </p>
                 </div>
               </div>
@@ -162,7 +228,7 @@ export const AIFAPopupPlaceholder: React.FC<AIFAPopupPlaceholderProps> = ({ isOp
         {/* Footer info */}
         <div className="border-t border-slate-100 pt-2 flex items-center justify-between text-[10px] text-slate-400">
           <span>Sebenarnya.my Initiative</span>
-          <span>Stage 2 Active</span>
+          <span>Stage 4 Active</span>
         </div>
       </div>
     </div>

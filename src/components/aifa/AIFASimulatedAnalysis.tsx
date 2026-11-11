@@ -3,30 +3,56 @@ import { ShieldCheck, CheckCircle2, Loader2 } from 'lucide-react';
 import { useAifa } from '../../context/AifaContext';
 
 export const AIFASimulatedAnalysis: React.FC = () => {
-  const { analysisStep, analysisProgress, closePanel, detectedArticle } = useAifa();
+  const { analysisStep, analysisProgress, closePanel, detectedArticle, detectedSocialPost } =
+    useAifa();
 
-  const steps = [
-    {
-      id: 'extracting',
-      title: 'Step 1 — Extracting Content',
-      desc: 'Reading the selected article and identifying relevant information.',
-    },
-    {
-      id: 'identifying',
-      title: 'Step 2 — Identifying Claims',
-      desc: 'Detecting factual statements that can be verified.',
-    },
-    {
-      id: 'reviewing',
-      title: 'Step 3 — Reviewing Evidence',
-      desc: 'Comparing identified claims with available reference information.',
-    },
-    {
-      id: 'complete',
-      title: 'Step 4 — Analysis Complete',
-      desc: 'Your verification results are ready.',
-    },
-  ];
+  const isSocial = Boolean(detectedSocialPost);
+
+  const steps = isSocial
+    ? [
+        {
+          id: 'extracting',
+          title: 'Step 1 — Extracting Post Caption',
+          desc: 'Parsing social post text and identifying verifiable claims.',
+        },
+        {
+          id: 'identifying',
+          title: 'Step 2 — Scanning Embedded Graphic (OCR)',
+          desc: 'Extracting text regions and formatting from attached poster.',
+        },
+        {
+          id: 'reviewing',
+          title: 'Step 3 — Reviewing Evidence Database',
+          desc: 'Cross-referencing Sebenarnya.my and official public records.',
+        },
+        {
+          id: 'complete',
+          title: 'Step 4 — Verification Complete',
+          desc: 'Caption and image verification results ready.',
+        },
+      ]
+    : [
+        {
+          id: 'extracting',
+          title: 'Step 1 — Extracting Content',
+          desc: 'Reading the selected article and identifying relevant information.',
+        },
+        {
+          id: 'identifying',
+          title: 'Step 2 — Identifying Claims',
+          desc: 'Detecting factual statements that can be verified.',
+        },
+        {
+          id: 'reviewing',
+          title: 'Step 3 — Reviewing Evidence',
+          desc: 'Comparing identified claims with available reference information.',
+        },
+        {
+          id: 'complete',
+          title: 'Step 4 — Analysis Complete',
+          desc: 'Your verification results are ready.',
+        },
+      ];
 
   const getStepStatus = (stepId: string) => {
     const stepOrder = ['extracting', 'identifying', 'reviewing', 'complete'];
@@ -38,6 +64,10 @@ export const AIFASimulatedAnalysis: React.FC = () => {
     return 'pending';
   };
 
+  const titleText = isSocial
+    ? detectedSocialPost?.author.name || 'Social Media Post'
+    : detectedArticle?.title || 'Selected Article';
+
   return (
     <div className="p-6 space-y-6 animate-in fade-in duration-200">
       {/* Top Banner */}
@@ -46,17 +76,17 @@ export const AIFASimulatedAnalysis: React.FC = () => {
           <ShieldCheck className="w-6 h-6 animate-pulse" strokeWidth={2.4} />
         </div>
         <h3 className="font-serif text-lg font-bold text-[#171B26]">
-          AIFA Assistant Analysing Article
+          AIFA Assistant Analysing Content
         </h3>
-        <p className="text-xs text-[#667085] max-w-xs mx-auto truncate">
-          {detectedArticle?.title}
+        <p className="text-xs text-[#667085] max-w-xs mx-auto truncate font-medium">
+          {titleText}
         </p>
       </div>
 
       {/* Progress Bar */}
       <div className="space-y-1.5">
         <div className="flex justify-between text-[11px] text-slate-500 font-medium">
-          <span>Verification Pipeline</span>
+          <span>{isSocial ? 'Multi-Modal Verification Pipeline' : 'Verification Pipeline'}</span>
           <span>{analysisProgress}%</span>
         </div>
         <div className="w-full h-1.5 bg-slate-100 rounded-full overflow-hidden">
