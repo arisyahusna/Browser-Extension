@@ -20,7 +20,7 @@ import {
   UserProfile,
   NotificationPreferences,
 } from '../types/aifa';
-import { SocialPost, FactCheckRequest, OcrBoundingBox } from '../types/social';
+import { SocialPost, FactCheckRequest } from '../types/social';
 import { useBrowser } from './BrowserContext';
 import { MOCK_ARTICLES } from '../data/mockArticles';
 import { MOCK_VERIFICATION_RESULTS } from '../data/mockVerificationResults';
@@ -38,6 +38,17 @@ import {
 
 const AifaContext = createContext<AifaContextType | undefined>(undefined);
 
+const DASHBOARD_SESSION_KEY = 'aifa_dashboard_session';
+
+/** "arisya.husna@x.com" → "Arisya Husna"; the demo address keeps its seeded display name. */
+const nameFromEmail = (email: string) => {
+  if (email === INITIAL_USER_PROFILE.email) return INITIAL_USER_PROFILE.name;
+  const local = email.split('@')[0] ?? '';
+  const words = local.split(/[._\-+]+/).filter(Boolean);
+  if (words.length === 0) return INITIAL_USER_PROFILE.name;
+  return words.map((w) => w.charAt(0).toUpperCase() + w.slice(1)).join(' ');
+};
+
 export const AifaProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   const { currentLocation, activeTabId, displayUrl, refreshNonce } = useBrowser();
   const [isExtensionEnabled, setIsExtensionEnabled] = useState(true);
@@ -49,6 +60,15 @@ export const AifaProvider: React.FC<{ children: React.ReactNode }> = ({ children
   });
   const [isConnectingAccount, setIsConnectingAccount] = useState(false);
   const [isSignInModalOpen, setSignInModalOpen] = useState(false);
+
+  // Dashboard session: the dashboard shows its login page until this is set.
+  // "Remember me" keeps it in localStorage; otherwise it lasts for this browser session.
+  const [isDashboardSignedIn, setIsDashboardSignedIn] = useState<boolean>(
+    () =>
+      localStorage.getItem(DASHBOARD_SESSION_KEY) === 'true' ||
+      sessionStorage.getItem(DASHBOARD_SESSION_KEY) === 'true'
+  );
+  const [isSigningInToDashboard, setIsSigningInToDashboard] = useState(false);
 
   // Onboarding State (Stage 5)
   const [isOnboardingCompleted, setIsOnboardingCompleted] = useState<boolean>(() => {
@@ -106,7 +126,6 @@ export const AifaProvider: React.FC<{ children: React.ReactNode }> = ({ children
   // Claims & Highlighting
   const [activeClaimId, setActiveClaimId] = useState<string | null>(null);
   const [expandedClaimIds, setExpandedClaimIds] = useState<string[]>([]);
-  const [activeImageHighlightBox, setActiveImageHighlightBox] = useState<OcrBoundingBox | null>(null);
   const [completedResults, setCompletedResults] = useState<Record<string, VerificationResult>>({
     ...MOCK_VERIFICATION_RESULTS,
     ...MOCK_SOCIAL_VERIFICATIONS,
@@ -211,7 +230,6 @@ export const AifaProvider: React.FC<{ children: React.ReactNode }> = ({ children
     setAnalysisStep('extracting');
     setAnalysisProgress(0);
     setActiveClaimId(null);
-    setActiveImageHighlightBox(null);
     setExpandedClaimIds([]);
     setPanelMode('closed');
     setPanelView('results');
@@ -239,13 +257,54 @@ export const AifaProvider: React.FC<{ children: React.ReactNode }> = ({ children
     }, 700);
   }, [isOnboardingCompleted]);
 
+  const clearDashboardSession = useCallback(() => {
+    localStorage.removeItem(DASHBOARD_SESSION_KEY);
+    sessionStorage.removeItem(DASHBOARD_SESSION_KEY);
+    setIsDashboardSignedIn(false);
+  }, []);
+
+  // Logging out disconnects the account, so it also ends the dashboard session.
   const disconnectAccount = useCallback(() => {
     setUserProfile((prev) => ({
       ...prev,
       isConnected: false,
       connectedAt: undefined,
     }));
-  }, []);
+    clearDashboardSession();
+  }, [clearDashboardSession]);
+
+  // Simulated sign-in: any well-formed email and password is accepted.
+  const signInToDashboard = useCallback(
+    (email: string, remember: boolean) => {
+      setIsSigningInToDashboard(true);
+      setTimeout(() => {
+        const normalized = email.trim().toLowerCase();
+        setUserProfile({
+          name: nameFromEmail(normalized),
+          email: normalized,
+          avatar: '👤',
+          isConnected: true,
+          connectedAt: new Date().toLocaleString('en-GB', {
+            day: 'numeric',
+            month: 'short',
+            year: 'numeric',
+            hour: 'numeric',
+            minute: '2-digit',
+            hour12: true,
+          }),
+        });
+        (remember ? localStorage : sessionStorage).setItem(DASHBOARD_SESSION_KEY, 'true');
+        setIsDashboardSignedIn(true);
+        setIsSigningInToDashboard(false);
+
+        // Same as connecting from the extension: first sign-in opens the guided tour.
+        if (!isOnboardingCompleted) {
+          setIsOnboardingOpen(true);
+        }
+      }, 900);
+    },
+    [isOnboardingCompleted]
+  );
 
   // Onboarding Operations
   const openOnboarding = useCallback(() => {
@@ -342,7 +401,7 @@ export const AifaProvider: React.FC<{ children: React.ReactNode }> = ({ children
         setActiveVerifiedPost(targetPost);
       }
 
-      // Step 2: Identifying Claims / OCR extraction (~1.0s)
+      // Step 2: Identifying Claims (~1.0s)
       const t1 = setTimeout(() => {
         setAnalysisStep('identifying');
         setAnalysisProgress(50);
@@ -373,13 +432,6 @@ export const AifaProvider: React.FC<{ children: React.ReactNode }> = ({ children
         if (mockResult.claims.length > 0) {
           setExpandedClaimIds([mockResult.claims[0].id]);
           setActiveClaimId(mockResult.claims[0].id);
-
-          if (mockResult.claims[0].imageBoundingBoxId && targetPost?.imageOcr) {
-            const box = targetPost.imageOcr.boundingBoxes.find(
-              (b) => b.id === mockResult.claims[0].imageBoundingBoxId
-            );
-            if (box) setActiveImageHighlightBox(box);
-          }
         }
 
         // Save to Shared Verification History (Stage 5)
@@ -411,7 +463,6 @@ export const AifaProvider: React.FC<{ children: React.ReactNode }> = ({ children
     setIsAnalyzing(false);
     setPanelMode('closed');
     setActiveClaimId(null);
-    setActiveImageHighlightBox(null);
     setExpandedClaimIds([]);
     setActiveVerifiedPost(null);
     setPanelView('results');
@@ -435,7 +486,6 @@ export const AifaProvider: React.FC<{ children: React.ReactNode }> = ({ children
     setIsAnalyzing(false);
     setPanelMode('closed');
     setActiveClaimId(null);
-    setActiveImageHighlightBox(null);
   }, [clearAnalysisTimers]);
 
   const toggleClaimExpanded = useCallback((claimId: string) => {
@@ -459,7 +509,7 @@ export const AifaProvider: React.FC<{ children: React.ReactNode }> = ({ children
 
   // Synchronised Locate in Social Post
   const locateClaimInSocialPost = useCallback(
-    (claimId: string, locationPreference?: 'caption' | 'image') => {
+    (claimId: string) => {
       setActiveClaimId(claimId);
       setExpandedClaimIds((prev) => (prev.includes(claimId) ? prev : [...prev, claimId]));
 
@@ -471,21 +521,6 @@ export const AifaProvider: React.FC<{ children: React.ReactNode }> = ({ children
       const postElement = document.getElementById(claim.postId || '');
       if (postElement) {
         postElement.scrollIntoView({ behavior: 'smooth', block: 'center' });
-      }
-
-      if (locationPreference === 'image' || claim.locationType === 'image') {
-        const allPosts = [...MOCK_CONNECT_POSTS, ...MOCK_PULSE_POSTS];
-        const post = allPosts.find((p) => p.id === claim.postId);
-        if (post?.imageOcr) {
-          const targetBox = post.imageOcr.boundingBoxes.find(
-            (b) => b.id === claim.imageBoundingBoxId || b.claimId === claimId
-          );
-          if (targetBox) {
-            setActiveImageHighlightBox(targetBox);
-          }
-        }
-      } else {
-        setActiveImageHighlightBox(null);
       }
     },
     [verificationResult]
@@ -519,7 +554,7 @@ export const AifaProvider: React.FC<{ children: React.ReactNode }> = ({ children
           sourcePlatform: verificationResult.platformName,
           additionalNotes: notes,
           includeSupportingContent: includeSupporting,
-          supportingContentSummary: `${verificationResult.summary} (Caption + Image OCR analyzed)`,
+          supportingContentSummary: verificationResult.summary,
           timestamp: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
           status: 'Submitted',
           lastUpdated: 'Just now',
@@ -627,6 +662,7 @@ export const AifaProvider: React.FC<{ children: React.ReactNode }> = ({ children
     localStorage.removeItem('aifa_fact_check_requests');
     localStorage.removeItem('aifa_notifications');
     localStorage.removeItem('aifa_onboarding_completed');
+    clearDashboardSession();
 
     setUserProfile(INITIAL_USER_PROFILE);
     setVerificationHistory(INITIAL_HISTORY);
@@ -634,7 +670,7 @@ export const AifaProvider: React.FC<{ children: React.ReactNode }> = ({ children
     setNotifications(INITIAL_NOTIFICATIONS);
     setIsOnboardingCompleted(false);
     resetVerification();
-  }, [resetVerification]);
+  }, [resetVerification, clearDashboardSession]);
 
   // Notifications Operations
   const markNotificationAsRead = useCallback((id: string) => {
@@ -679,6 +715,9 @@ export const AifaProvider: React.FC<{ children: React.ReactNode }> = ({ children
       disconnectAccount,
       isSignInModalOpen,
       setSignInModalOpen,
+      isDashboardSignedIn,
+      isSigningInToDashboard,
+      signInToDashboard,
       isExtensionEnabled,
       toggleExtension,
       isOnboardingCompleted,
@@ -712,7 +751,6 @@ export const AifaProvider: React.FC<{ children: React.ReactNode }> = ({ children
       setActiveClaimId,
       expandedClaimIds,
       toggleClaimExpanded,
-      activeImageHighlightBox,
       locateClaimInArticle,
       locateClaimInSocialPost,
       activeFactCheckClaim,
@@ -749,6 +787,9 @@ export const AifaProvider: React.FC<{ children: React.ReactNode }> = ({ children
       connectAccount,
       disconnectAccount,
       isSignInModalOpen,
+      isDashboardSignedIn,
+      isSigningInToDashboard,
+      signInToDashboard,
       isExtensionEnabled,
       toggleExtension,
       isOnboardingCompleted,
@@ -780,7 +821,6 @@ export const AifaProvider: React.FC<{ children: React.ReactNode }> = ({ children
       activeClaimId,
       expandedClaimIds,
       toggleClaimExpanded,
-      activeImageHighlightBox,
       locateClaimInArticle,
       locateClaimInSocialPost,
       activeFactCheckClaim,

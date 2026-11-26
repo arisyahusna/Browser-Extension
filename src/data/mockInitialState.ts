@@ -72,3 +72,4 @@ export const INITIAL_NOTIFICATIONS: NotificationItem[] = [
     type: 'system',
   },
 ];
+

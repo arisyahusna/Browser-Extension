@@ -87,7 +87,7 @@ export const ConnectSocialFeed: React.FC = () => {
               <span>AIFA Feed Scanner</span>
             </div>
             <p className="text-[11px] text-slate-600 leading-relaxed">
-              Hover over any social post in your feed to inspect its claims and extract image text.
+              Hover over any social post in your feed to inspect its claims.
             </p>
           </div>
         </aside>

@@ -7,6 +7,12 @@ import {
   LogIn,
 } from 'lucide-react';
 import { useAifa } from '../../context/AifaContext';
+import { DASHBOARD_SECTION_IDS } from './dashboardTypes';
+
+const cardClass = 'bg-white rounded-[28px] border border-[#E0DED9] p-5 sm:p-6 space-y-4';
+const cardTitleClass = 'text-[15px] font-semibold text-[#2A2A2A]';
+const secondaryButton =
+  'h-9 px-4 rounded-full bg-white border border-[#E0DED9] text-[#2A2A2A] font-semibold text-xs transition-colors flex items-center gap-1.5 cursor-pointer';
 
 export const DashboardSettings: React.FC = () => {
   const {
@@ -32,36 +38,34 @@ export const DashboardSettings: React.FC = () => {
   };
 
   return (
-    <div className="space-y-6 max-w-3xl">
-      <div>
-        <h2 className="text-xl font-bold text-slate-900 tracking-tight">
+    <div className="space-y-4 max-w-3xl mx-auto">
+      <div className="pt-2 pb-1">
+        <h2 className="text-[28px] leading-tight font-bold text-[#2A2A2A] tracking-tight">
           Account & Extension Preferences
         </h2>
-        <p className="text-xs text-slate-500 mt-0.5">
+        <p className="text-sm text-[#6F6D69] mt-1">
           Configure notification preferences, manage account connectivity, and control client simulation state.
         </p>
       </div>
 
       {/* Profile Card */}
-      <div className="bg-white rounded-2xl border border-slate-200 p-6 space-y-4 shadow-sm">
-        <h3 className="text-xs font-bold uppercase tracking-wider text-slate-400">
-          Connected Profile
-        </h3>
-        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 p-4 rounded-xl bg-slate-50 border border-slate-200">
+      <div id={DASHBOARD_SECTION_IDS.account} className={`${cardClass} scroll-mt-6`}>
+        <h3 className={cardTitleClass}>Connected Profile</h3>
+        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 p-4 rounded-[22px] bg-[#F4F3F1]">
           <div className="flex items-center gap-3.5">
-            <div className="w-12 h-12 rounded-full bg-rose-100 border border-rose-200 flex items-center justify-center text-2xl">
+            <div className="w-12 h-12 rounded-full bg-[#DFE6F5] flex items-center justify-center text-2xl">
               {userProfile.avatar || '👤'}
             </div>
             <div>
-              <div className="text-sm font-bold text-slate-900">{userProfile.name}</div>
-              <div className="text-xs text-slate-500">{userProfile.email}</div>
+              <div className="text-sm font-semibold text-[#2A2A2A]">{userProfile.name}</div>
+              <div className="text-xs text-[#6F6D69]">{userProfile.email}</div>
               <div className="flex items-center gap-1.5 mt-1">
                 <span
                   className={`w-2 h-2 rounded-full ${
-                    userProfile.isConnected ? 'bg-emerald-500' : 'bg-slate-300'
+                    userProfile.isConnected ? 'bg-emerald-500' : 'bg-[#6F6D69]/40'
                   }`}
                 />
-                <span className="text-[11px] text-slate-600 font-medium">
+                <span className="text-[11px] text-[#5C5A56] font-medium">
                   {userProfile.isConnected
                     ? 'Connected to Sebenarnya.my Cloud Archive'
                     : 'Disconnected'}
@@ -75,7 +79,7 @@ export const DashboardSettings: React.FC = () => {
               <button
                 type="button"
                 onClick={disconnectAccount}
-                className="px-3.5 py-2 rounded-xl border border-slate-300 hover:bg-rose-50 hover:text-rose-600 hover:border-rose-200 text-slate-700 font-semibold text-xs transition-colors flex items-center gap-1.5 cursor-pointer"
+                className={`${secondaryButton} hover:bg-[#F7DEDB] hover:text-[#9B3D36] hover:border-transparent`}
               >
                 <LogOut className="w-3.5 h-3.5" />
                 <span>Disconnect</span>
@@ -84,7 +88,7 @@ export const DashboardSettings: React.FC = () => {
               <button
                 type="button"
                 onClick={() => setSignInModalOpen(true)}
-                className="px-4 py-2 rounded-xl bg-[#D93043] text-white hover:bg-[#B72435] font-semibold text-xs transition-colors flex items-center gap-1.5 cursor-pointer shadow-sm"
+                className="h-9 px-4 rounded-full bg-[#2A2A2A] text-white hover:bg-black font-semibold text-xs transition-colors flex items-center gap-1.5 cursor-pointer"
               >
                 <LogIn className="w-3.5 h-3.5" />
                 <span>Connect Account</span>
@@ -95,17 +99,15 @@ export const DashboardSettings: React.FC = () => {
       </div>
 
       {/* Notification Preferences */}
-      <div className="bg-white rounded-2xl border border-slate-200 p-6 space-y-4 shadow-sm">
-        <h3 className="text-xs font-bold uppercase tracking-wider text-slate-400">
-          Notification Preferences
-        </h3>
-        <div className="space-y-3 divide-y divide-slate-100">
-          <label className="pt-2 flex items-center justify-between cursor-pointer">
+      <div id={DASHBOARD_SECTION_IDS.preferences} className={`${cardClass} scroll-mt-6`}>
+        <h3 className={cardTitleClass}>Notification Preferences</h3>
+        <div className="rounded-[22px] bg-[#F4F3F1] px-4 divide-y divide-[#E0DED9]">
+          <label className="py-4 flex items-center justify-between gap-4 cursor-pointer">
             <div>
-              <div className="font-semibold text-slate-800 text-xs">
+              <div className="font-semibold text-[#2A2A2A] text-xs">
                 In-Browser Status Alerts
               </div>
-              <div className="text-[11px] text-slate-500">
+              <div className="text-[11px] text-[#6F6D69]">
                 Display floating toast notifications when fact-check reviews are published
               </div>
             </div>
@@ -117,16 +119,16 @@ export const DashboardSettings: React.FC = () => {
                   browserNotifications: e.target.checked,
                 })
               }
-              className="w-4 h-4 text-[#D93043] rounded border-slate-300 focus:ring-rose-500 cursor-pointer"
+              className="w-[18px] h-[18px] shrink-0 accent-[#2A2A2A] cursor-pointer"
             />
           </label>
 
-          <label className="pt-3 flex items-center justify-between cursor-pointer">
+          <label className="py-4 flex items-center justify-between gap-4 cursor-pointer">
             <div>
-              <div className="font-semibold text-slate-800 text-xs">
+              <div className="font-semibold text-[#2A2A2A] text-xs">
                 Simulated Email Updates
               </div>
-              <div className="text-[11px] text-slate-500">
+              <div className="text-[11px] text-[#6F6D69]">
                 Enable interactive email previews dispatched by no-reply@sebenarnya.my
               </div>
             </div>
@@ -138,28 +140,26 @@ export const DashboardSettings: React.FC = () => {
                   emailNotifications: e.target.checked,
                 })
               }
-              className="w-4 h-4 text-[#D93043] rounded border-slate-300 focus:ring-rose-500 cursor-pointer"
+              className="w-[18px] h-[18px] shrink-0 accent-[#2A2A2A] cursor-pointer"
             />
           </label>
         </div>
       </div>
 
       {/* Onboarding Guide */}
-      <div className="bg-white rounded-2xl border border-slate-200 p-6 space-y-3 shadow-sm">
-        <h3 className="text-xs font-bold uppercase tracking-wider text-slate-400">
-          Tutorial & Help
-        </h3>
-        <div className="flex items-center justify-between p-4 rounded-xl bg-slate-50 border border-slate-200">
+      <div className={cardClass}>
+        <h3 className={cardTitleClass}>Tutorial & Help</h3>
+        <div className="flex items-center justify-between gap-4 p-4 rounded-[22px] bg-[#F4F3F1]">
           <div>
-            <div className="text-xs font-bold text-slate-800">AIFA Browser Assistant Tour</div>
-            <div className="text-[11px] text-slate-500">
+            <div className="text-xs font-semibold text-[#2A2A2A]">AIFA Browser Assistant Tour</div>
+            <div className="text-[11px] text-[#6F6D69]">
               Launch the interactive 3-step walkthrough guide
             </div>
           </div>
           <button
             type="button"
             onClick={openOnboarding}
-            className="px-3.5 py-1.5 rounded-lg bg-white border border-slate-300 text-slate-700 font-semibold text-xs hover:bg-slate-100 transition-colors flex items-center gap-1.5 cursor-pointer"
+            className={`${secondaryButton} shrink-0 hover:bg-[#E2E4EA]`}
           >
             <BookOpen className="w-3.5 h-3.5" />
             <span>Replay Tour</span>
@@ -168,64 +168,62 @@ export const DashboardSettings: React.FC = () => {
       </div>
 
       {/* Demo Controls & Data Reset */}
-      <div className="bg-white rounded-2xl border border-slate-200 p-6 space-y-4 shadow-sm">
-        <h3 className="text-xs font-bold uppercase tracking-wider text-slate-400">
-          Demo State Management
-        </h3>
-        <div className="p-4 rounded-xl bg-slate-50 border border-slate-200 space-y-3 text-xs">
-          <div className="flex items-center justify-between">
+      <div className={cardClass}>
+        <h3 className={cardTitleClass}>Demo State Management</h3>
+        <div className="p-4 rounded-[22px] bg-[#F4F3F1] space-y-4 text-xs">
+          <div className="flex items-center justify-between gap-4">
             <div>
-              <div className="font-semibold text-slate-800">Clear Verification History</div>
-              <div className="text-[11px] text-slate-500">
+              <div className="font-semibold text-[#2A2A2A]">Clear Verification History</div>
+              <div className="text-[11px] text-[#6F6D69]">
                 Removes all stored verification findings
               </div>
             </div>
             <button
               type="button"
               onClick={clearHistory}
-              className="px-3 py-1.5 rounded-lg border border-slate-300 hover:bg-rose-50 hover:text-rose-600 hover:border-rose-200 text-slate-600 font-medium transition-colors cursor-pointer"
+              className={`${secondaryButton} shrink-0 font-medium hover:bg-[#F7DEDB] hover:text-[#9B3D36] hover:border-transparent`}
             >
               Clear History
             </button>
           </div>
 
-          <div className="border-t border-slate-200 pt-3 flex items-center justify-between">
+          <div className="border-t border-[#E0DED9] pt-4 flex items-center justify-between gap-4">
             <div>
-              <div className="font-semibold text-slate-800">Clear Demo Requests</div>
-              <div className="text-[11px] text-slate-500">
+              <div className="font-semibold text-[#2A2A2A]">Clear Demo Requests</div>
+              <div className="text-[11px] text-[#6F6D69]">
                 Reverts inquiries to initial sample inquiry
               </div>
             </div>
             <button
               type="button"
               onClick={clearDemoRequests}
-              className="px-3 py-1.5 rounded-lg border border-slate-300 hover:bg-rose-50 hover:text-rose-600 hover:border-rose-200 text-slate-600 font-medium transition-colors cursor-pointer"
+              className={`${secondaryButton} shrink-0 font-medium hover:bg-[#F7DEDB] hover:text-[#9B3D36] hover:border-transparent`}
             >
               Clear Requests
             </button>
           </div>
 
-          <div className="border-t border-slate-200 pt-3">
+          <div className="border-t border-[#E0DED9] pt-4">
             {confirmReset ? (
-              <div className="bg-rose-50 border border-rose-200 p-3 rounded-xl space-y-2">
-                <div className="font-bold text-rose-800">
+              <div className="bg-[#F7DEDB] p-4 rounded-[20px] space-y-2">
+                <div className="font-semibold text-[#9B3D36]">
                   Reset all simulation data to initial state?
                 </div>
-                <div className="text-[11px] text-rose-700">
+                <div className="text-[11px] text-[#9B3D36]/90">
                   This will reset all history records, requests, and notifications to default sample values.
                 </div>
                 <div className="flex items-center gap-2 pt-1">
                   <button
                     type="button"
                     onClick={handleResetData}
-                    className="px-3.5 py-1.5 bg-[#D93043] text-white rounded-lg font-bold hover:bg-[#B72435] cursor-pointer"
+                    className="h-9 px-4 bg-[#9B3D36] text-white rounded-full font-semibold hover:bg-[#82322C] transition-colors cursor-pointer"
                   >
                     Confirm Reset
                   </button>
                   <button
                     type="button"
                     onClick={() => setConfirmReset(false)}
-                    className="px-3.5 py-1.5 text-slate-600 hover:bg-slate-200 rounded-lg cursor-pointer"
+                    className="h-9 px-4 text-[#2A2A2A] font-medium hover:bg-[#E2E4EA] rounded-full transition-colors cursor-pointer"
                   >
                     Cancel
                   </button>
@@ -235,7 +233,7 @@ export const DashboardSettings: React.FC = () => {
               <button
                 type="button"
                 onClick={() => setConfirmReset(true)}
-                className="w-full py-2.5 bg-white hover:bg-rose-50 text-rose-600 border border-rose-200 rounded-xl font-semibold transition-colors flex items-center justify-center gap-1.5 cursor-pointer"
+                className="w-full h-11 bg-white hover:bg-[#F7DEDB] text-[#9B3D36] border border-[#E9928B]/50 rounded-full font-semibold transition-colors flex items-center justify-center gap-1.5 cursor-pointer"
               >
                 <RotateCcw className="w-3.5 h-3.5" />
                 <span>Reset All Demo Data to Defaults</span>
@@ -245,8 +243,8 @@ export const DashboardSettings: React.FC = () => {
         </div>
 
         {saveToast && (
-          <div className="p-3 bg-emerald-50 border border-emerald-200 text-emerald-800 text-xs rounded-xl flex items-center gap-2">
-            <Check className="w-4 h-4 text-emerald-600" />
+          <div className="p-3.5 bg-[#DFE6F5] text-[#3F5C9E] text-xs font-medium rounded-full flex items-center gap-2">
+            <Check className="w-4 h-4" />
             <span>Demo state restored to original defaults.</span>
           </div>
         )}

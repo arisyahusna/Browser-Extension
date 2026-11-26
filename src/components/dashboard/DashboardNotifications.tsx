@@ -35,21 +35,21 @@ export const DashboardNotifications: React.FC<DashboardNotificationsProps> = ({ 
   };
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-5">
       {/* Title & Actions */}
-      <div className="flex flex-col md:flex-row items-start md:items-center justify-between gap-4">
+      <div className="flex flex-col md:flex-row items-start md:items-end justify-between gap-4 pt-2">
         <div>
-          <div className="flex items-center gap-2">
-            <h2 className="text-xl font-bold text-slate-900 tracking-tight">
+          <div className="flex items-center gap-2.5">
+            <h2 className="text-[28px] leading-tight font-bold text-[#2A2A2A] tracking-tight">
               Activity & Review Notifications
             </h2>
             {unreadNotificationCount > 0 && (
-              <span className="px-2 py-0.5 rounded-full text-xs font-bold bg-rose-100 text-[#D93043]">
+              <span className="px-2.5 py-1 rounded-full text-xs font-semibold bg-[#D93043] text-white">
                 {unreadNotificationCount} New
               </span>
             )}
           </div>
-          <p className="text-xs text-slate-500 mt-0.5">
+          <p className="text-sm text-[#6F6D69] mt-1">
             Real-time updates regarding fact-checking inquiries and browser extension status.
           </p>
         </div>
@@ -58,7 +58,7 @@ export const DashboardNotifications: React.FC<DashboardNotificationsProps> = ({ 
           <button
             type="button"
             onClick={markAllNotificationsAsRead}
-            className="px-3 py-1.5 rounded-lg border border-slate-300 hover:bg-slate-100 text-slate-700 text-xs font-semibold transition-colors flex items-center gap-1.5 cursor-pointer"
+            className="h-10 px-4 rounded-full bg-white border border-[#E0DED9] hover:bg-[#E2E4EA] text-[#2A2A2A] text-xs font-semibold transition-colors flex items-center gap-1.5 cursor-pointer"
           >
             <CheckCheck className="w-3.5 h-3.5" />
             <span>Mark All as Read</span>
@@ -69,10 +69,10 @@ export const DashboardNotifications: React.FC<DashboardNotificationsProps> = ({ 
       {/* Notifications List */}
       <div className="space-y-3">
         {notifications.length === 0 ? (
-          <div className="bg-white rounded-xl border border-slate-200 p-12 text-center space-y-2">
-            <Bell className="w-8 h-8 text-slate-300 mx-auto" />
-            <h4 className="text-sm font-bold text-slate-700">No Notifications</h4>
-            <p className="text-xs text-slate-500 max-w-sm mx-auto">
+          <div className="bg-white rounded-[28px] border border-[#E0DED9] p-12 text-center space-y-2">
+            <Bell className="w-8 h-8 text-[#6F6D69]/50 mx-auto" />
+            <h4 className="text-sm font-semibold text-[#2A2A2A]">No Notifications</h4>
+            <p className="text-xs text-[#6F6D69] max-w-sm mx-auto">
               You are all caught up! Updates about your submitted requests will appear here.
             </p>
           </div>
@@ -81,19 +81,19 @@ export const DashboardNotifications: React.FC<DashboardNotificationsProps> = ({ 
             <div
               key={item.id}
               onClick={() => handleNotificationClick(item)}
-              className={`p-4 rounded-xl border transition-all cursor-pointer flex items-start gap-3.5 ${
+              className={`p-5 rounded-[24px] border transition-colors cursor-pointer flex items-start gap-4 ${
                 item.isRead
-                  ? 'bg-white border-slate-200 hover:border-slate-300'
-                  : 'bg-rose-50/30 border-rose-200/80 shadow-xs hover:bg-rose-50/50'
+                  ? 'bg-white border-[#E0DED9] hover:border-[#2A2A2A]/15'
+                  : 'bg-white border-[#5774BC]/25 shadow-[0_12px_28px_-16px_rgba(87,116,188,0.45)] hover:border-[#5774BC]/45'
               }`}
             >
               <div
-                className={`w-9 h-9 rounded-xl flex items-center justify-center shrink-0 mt-0.5 ${
+                className={`w-11 h-11 rounded-full flex items-center justify-center shrink-0 ${
                   item.type === 'request_completed'
-                    ? 'bg-emerald-100 text-emerald-700'
+                    ? 'bg-[#DCEFE2] text-[#2F6B45]'
                     : item.type === 'request_review'
-                    ? 'bg-amber-100 text-amber-700'
-                    : 'bg-blue-100 text-blue-700'
+                    ? 'bg-[#F4EBCB] text-[#715C1C]'
+                    : 'bg-[#E8E6E2] text-[#5C5A56]'
                 }`}
               >
                 {item.type === 'request_completed' ? (
@@ -109,27 +109,31 @@ export const DashboardNotifications: React.FC<DashboardNotificationsProps> = ({ 
                 <div className="flex items-center justify-between gap-2">
                   <div className="flex items-center gap-2">
                     <h4
-                      className={`text-xs font-bold ${
-                        item.isRead ? 'text-slate-800' : 'text-slate-900'
+                      className={`text-sm ${
+                        item.isRead ? 'font-medium text-[#5C5A56]' : 'font-semibold text-[#2A2A2A]'
                       }`}
                     >
                       {item.title}
                     </h4>
                     {!item.isRead && (
-                      <span className="w-2 h-2 rounded-full bg-[#D93043] shrink-0" />
+                      <span className="w-2 h-2 rounded-full bg-[#5774BC] shrink-0" />
                     )}
                   </div>
-                  <span className="text-[11px] text-slate-400 shrink-0">{item.timestamp}</span>
+                  <span className="text-[11px] text-[#6F6D69] shrink-0">{item.timestamp}</span>
                 </div>
 
-                <p className="text-xs text-slate-600 mt-1 leading-relaxed">{item.message}</p>
+                <p className="text-xs text-[#6F6D69] mt-1 leading-relaxed">{item.message}</p>
 
                 {item.referenceNumber && (
-                  <div className="mt-2 flex items-center gap-2">
-                    <span className="font-mono text-[10px] font-bold text-slate-600 bg-slate-100 px-2 py-0.5 rounded">
+                  <div className="mt-2.5 flex items-center gap-2">
+                    <span
+                      className={`font-mono text-[10px] font-semibold text-[#5C5A56] px-2.5 py-1 rounded-full ${
+                        'bg-[#F4F3F1]'
+                      }`}
+                    >
                       Ref: {item.referenceNumber}
                     </span>
-                    <span className="text-[10px] text-teal-700 font-semibold hover:underline flex items-center gap-0.5">
+                    <span className="text-[11px] text-[#3F5C9E] font-semibold hover:underline flex items-center gap-0.5">
                       <span>View details &rarr;</span>
                     </span>
                   </div>

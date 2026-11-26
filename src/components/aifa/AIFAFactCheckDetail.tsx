@@ -14,59 +14,59 @@ export const AIFAFactCheckDetail: React.FC = () => {
   ];
 
   return (
-    <div className="p-5 space-y-5 animate-in fade-in duration-200 text-xs">
+    <div className="px-1 py-2 space-y-4 animate-in fade-in duration-200 text-xs">
       {/* Header */}
-      <div className="flex items-center gap-2 pb-2 border-b border-slate-100">
+      <div className="flex items-center gap-3">
         <button
           type="button"
           onClick={returnToResults}
-          className="p-1 rounded-lg hover:bg-slate-100 text-slate-500 hover:text-slate-800 transition-colors"
+          className="w-9 h-9 shrink-0 rounded-full border-[1.5px] border-[#2A2A2A] text-[#2A2A2A] flex items-center justify-center hover:bg-[#E2E4EA] transition-colors"
           title="Back to verification results"
         >
           <ArrowLeft className="w-4 h-4" />
         </button>
         <div>
-          <h3 className="font-serif text-sm font-bold text-slate-900 leading-tight">
+          <h3 className="text-base font-bold text-[#2A2A2A] leading-tight tracking-tight">
             Request Status & Tracking
           </h3>
-          <p className="text-[11px] text-slate-400 font-mono">
+          <p className="text-[11px] text-[#6F6D69] font-mono">
             {currentRequest.referenceNumber}
           </p>
         </div>
       </div>
 
       {/* Progress Timeline */}
-      <div className="rounded-xl bg-[#FAFBFD] border border-slate-200/80 p-4 space-y-3">
-        <h4 className="text-[10px] uppercase font-bold tracking-wider text-slate-400">
-          Verification Review Pipeline
-        </h4>
+      <div className="rounded-[22px] bg-white p-4 space-y-4">
+        <h4 className="text-[13px] font-semibold text-[#2A2A2A]">Verification Review Pipeline</h4>
         <div className="space-y-4">
           {timelineSteps.map((step, idx) => (
             <div key={step.title} className="flex items-start gap-3 relative">
               {idx < timelineSteps.length - 1 && (
                 <div
-                  className={`absolute left-2.5 top-5 bottom-0 w-[1px] ${
-                    step.completed ? 'bg-emerald-300' : 'bg-slate-200'
+                  className={`absolute left-3 top-6 -bottom-4 w-[2px] rounded-full ${
+                    step.completed ? 'bg-[#BFE0CA]' : 'bg-[#E8E6E2]'
                   }`}
                 />
               )}
-              <div className="mt-0.5 z-10 shrink-0">
+              <div className="z-10 shrink-0">
                 {step.completed ? (
-                  <CheckCircle2 className="w-5 h-5 text-emerald-600" />
+                  <span className="w-6 h-6 rounded-full bg-[#3A8656] text-white flex items-center justify-center">
+                    <CheckCircle2 className="w-4 h-4" />
+                  </span>
                 ) : (
-                  <span className="w-5 h-5 rounded-full border-2 border-slate-300 bg-white flex items-center justify-center text-[10px] text-slate-400">
+                  <span className="w-6 h-6 rounded-full bg-[#E8E6E2] flex items-center justify-center text-[10px] font-semibold text-[#6F6D69]">
                     {idx + 1}
                   </span>
                 )}
               </div>
               <div className="flex-1">
-                <div className="flex justify-between items-center">
-                  <span className={`font-semibold ${step.completed ? 'text-slate-900' : 'text-slate-400'}`}>
+                <div className="flex justify-between items-center gap-2">
+                  <span className={`font-semibold ${step.completed ? 'text-[#2A2A2A]' : 'text-[#6F6D69]'}`}>
                     {step.title}
                   </span>
-                  <span className="text-[10px] text-slate-400">{step.time}</span>
+                  <span className="text-[10px] text-[#6F6D69]">{step.time}</span>
                 </div>
-                <p className="text-[11px] text-slate-500 mt-0.5">{step.desc}</p>
+                <p className="text-[11px] text-[#6F6D69] mt-0.5">{step.desc}</p>
               </div>
             </div>
           ))}
@@ -74,23 +74,21 @@ export const AIFAFactCheckDetail: React.FC = () => {
       </div>
 
       {/* Request Details */}
-      <div className="rounded-xl bg-white border border-slate-200 p-4 space-y-2.5">
-        <h4 className="text-[10.5px] uppercase font-bold tracking-wider text-slate-500">
-          Inquiry Record
-        </h4>
-        <div className="space-y-1.5 text-slate-700 leading-relaxed text-[11.5px]">
+      <div className="rounded-[22px] bg-white p-4 space-y-2.5">
+        <h4 className="text-[13px] font-semibold text-[#2A2A2A]">Inquiry Record</h4>
+        <div className="space-y-1.5 text-[#5C5A56] leading-relaxed text-[11.5px]">
           <div>
-            <span className="font-semibold text-slate-800">Claim Statement: </span>
+            <span className="font-semibold text-[#2A2A2A]">Claim Statement: </span>
             <span>"{currentRequest.claimText}"</span>
           </div>
           <div>
-            <span className="font-semibold text-slate-800">Platform: </span>
+            <span className="font-semibold text-[#2A2A2A]">Platform: </span>
             <span>{currentRequest.sourcePlatform}</span>
           </div>
           {currentRequest.additionalNotes && (
             <div>
-              <span className="font-semibold text-slate-800">User Notes: </span>
-              <span className="text-slate-600 italic">"{currentRequest.additionalNotes}"</span>
+              <span className="font-semibold text-[#2A2A2A]">User Notes: </span>
+              <span className="italic">"{currentRequest.additionalNotes}"</span>
             </div>
           )}
         </div>
@@ -99,7 +97,7 @@ export const AIFAFactCheckDetail: React.FC = () => {
       <button
         type="button"
         onClick={returnToResults}
-        className="w-full py-2 px-3 rounded-xl bg-slate-900 text-white font-semibold hover:bg-slate-800 transition-colors"
+        className="w-full h-11 px-3 rounded-full bg-[#2A2A2A] text-white font-semibold hover:bg-black transition-colors"
       >
         Back to Verification
       </button>

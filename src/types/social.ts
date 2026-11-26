@@ -1,20 +1,6 @@
-export interface OcrBoundingBox {
-  id: string;
-  claimId?: string;
-  top: number; // percentage (0 - 100)
-  left: number; // percentage (0 - 100)
-  width: number; // percentage (0 - 100)
-  height: number; // percentage (0 - 100)
-  text: string;
-}
-
-export interface SocialImageOcr {
-  imageUrl: string;
-  imageAlt: string;
-  badgeLabel: string;
-  extractedText: string;
-  boundingBoxes: OcrBoundingBox[];
-  formattingNotes: string;
+export interface SocialImage {
+  url: string;
+  alt: string;
 }
 
 export interface SocialAuthor {
@@ -30,7 +16,7 @@ export interface SocialPost {
   author: SocialAuthor;
   timestamp: string;
   caption: string;
-  imageOcr?: SocialImageOcr;
+  image?: SocialImage;
   likesCount: string;
   repostsCount: string;
   repliesCount: string;

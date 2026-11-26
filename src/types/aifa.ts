@@ -1,4 +1,4 @@
-import { SocialPost, FactCheckRequest, OcrBoundingBox } from './social';
+import { SocialPost, FactCheckRequest } from './social';
 
 export interface DetectedArticleInfo {
   id: string;
@@ -26,9 +26,7 @@ export interface ClaimAnalysis {
   id: string;
   claimNumber: number;
   paragraphId?: string; // For articles
-  postId?: string; // For social posts
-  locationType?: 'caption' | 'image' | 'both'; // For social posts
-  imageBoundingBoxId?: string;
+  postId?: string; // For social posts (claims are located in the post caption)
   statement: string;
   exactArticleText: string;
   verdict: ClaimVerdict;
@@ -53,8 +51,6 @@ export interface VerificationResult {
   assessmentExplanation: string;
   summary: string;
   captionText?: string;
-  extractedImageText?: string;
-  imageOcrNotes?: string;
   claims: ClaimAnalysis[];
   demoNotice: string;
 }
@@ -106,7 +102,12 @@ export interface AifaContextType {
   disconnectAccount: () => void;
   isSignInModalOpen: boolean;
   setSignInModalOpen: (open: boolean) => void;
-  
+
+  // Dashboard login (the dashboard shows its login page until signed in)
+  isDashboardSignedIn: boolean;
+  isSigningInToDashboard: boolean;
+  signInToDashboard: (email: string, remember: boolean) => void;
+
   // Extension enablement
   isExtensionEnabled: boolean;
   toggleExtension: () => void;
@@ -157,9 +158,8 @@ export interface AifaContextType {
   toggleClaimExpanded: (claimId: string) => void;
   
   // Synchronized locating
-  activeImageHighlightBox: OcrBoundingBox | null;
   locateClaimInArticle: (claimId: string) => void;
-  locateClaimInSocialPost: (claimId: string, locationPreference?: 'caption' | 'image') => void;
+  locateClaimInSocialPost: (claimId: string) => void;
   
   // Request Fact-Check Workflow (Stage 4)
   activeFactCheckClaim: ClaimAnalysis | null;

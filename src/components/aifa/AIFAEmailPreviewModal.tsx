@@ -21,22 +21,24 @@ export const AIFAEmailPreviewModal: React.FC = () => {
 
   const isCompleted = emailPreviewRequest.status === 'Completed';
 
+  const headerLabel = 'w-16 shrink-0 font-semibold text-[#6F6D69] text-[11px]';
+
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center bg-slate-900/60 backdrop-blur-sm p-4 animate-in fade-in duration-200">
+    <div className="fixed inset-0 z-50 flex items-center justify-center bg-[#2A2A2A]/50 backdrop-blur-sm p-4 animate-in fade-in duration-200 font-['Montserrat',sans-serif] antialiased">
       <div
-        className="w-full max-w-xl bg-white rounded-2xl shadow-2xl border border-slate-200 overflow-hidden flex flex-col"
+        className="w-full max-w-xl bg-[#EEEFF3] rounded-[32px] shadow-[0_32px_64px_-16px_rgba(42,42,42,0.4)] border border-[#E0DED9] overflow-hidden flex flex-col"
         role="dialog"
         aria-modal="true"
         aria-labelledby="email-modal-title"
       >
         {/* Simulated Email Client Window Bar */}
-        <div className="bg-slate-800 text-white px-4 py-2.5 flex items-center justify-between text-xs font-mono">
+        <div className="bg-[#2A2A2A] text-white px-5 py-3 flex items-center justify-between text-xs">
           <div className="flex items-center gap-2">
-            <span className="w-2.5 h-2.5 rounded-full bg-rose-500" />
-            <span className="w-2.5 h-2.5 rounded-full bg-amber-500" />
-            <span className="w-2.5 h-2.5 rounded-full bg-emerald-500" />
-            <span className="text-slate-300 ml-2 font-sans font-medium text-xs flex items-center gap-1.5">
-              <Mail className="w-3.5 h-3.5 text-slate-400" />
+            <span className="w-2.5 h-2.5 rounded-full bg-[#E9928B]" />
+            <span className="w-2.5 h-2.5 rounded-full bg-[#E8CF85]" />
+            <span className="w-2.5 h-2.5 rounded-full bg-[#8CC5A0]" />
+            <span className="text-white/80 ml-2 font-medium text-xs flex items-center gap-1.5">
+              <Mail className="w-3.5 h-3.5 text-white/60" />
               Simulated Email Notification Preview
             </span>
           </div>
@@ -44,7 +46,7 @@ export const AIFAEmailPreviewModal: React.FC = () => {
           <button
             type="button"
             onClick={closeEmailPreview}
-            className="p-1 rounded text-slate-400 hover:text-white hover:bg-white/10 transition-colors"
+            className="w-7 h-7 flex items-center justify-center rounded-full text-white/70 hover:text-white hover:bg-white/10 transition-colors cursor-pointer"
             aria-label="Close email modal"
           >
             <X className="w-4 h-4" />
@@ -52,61 +54,54 @@ export const AIFAEmailPreviewModal: React.FC = () => {
         </div>
 
         {/* Email Header Details */}
-        <div className="p-5 border-b border-slate-200 bg-slate-50 space-y-2 text-xs">
+        <div className="m-3 mb-0 p-4 rounded-[22px] bg-white space-y-2 text-xs">
           <div className="flex items-baseline">
-            <span className="w-16 font-semibold text-slate-400 uppercase tracking-wider text-[10px]">
-              From:
-            </span>
-            <span className="font-semibold text-slate-800">
+            <span className={headerLabel}>From:</span>
+            <span className="font-semibold text-[#2A2A2A]">
               Sebenarnya.my AIFA Service &lt;no-reply@sebenarnya.my&gt;
             </span>
           </div>
           <div className="flex items-baseline">
-            <span className="w-16 font-semibold text-slate-400 uppercase tracking-wider text-[10px]">
-              To:
-            </span>
-            <span className="text-slate-700">AIFA Demo User &lt;demo@example.com&gt;</span>
+            <span className={headerLabel}>To:</span>
+            <span className="text-[#5C5A56]">AIFA Demo User &lt;demo@example.com&gt;</span>
           </div>
           <div className="flex items-baseline">
-            <span className="w-16 font-semibold text-slate-400 uppercase tracking-wider text-[10px]">
-              Subject:
-            </span>
-            <span id="email-modal-title" className="font-bold text-slate-900">
+            <span className={headerLabel}>Subject:</span>
+            <span id="email-modal-title" className="font-bold text-[#2A2A2A]">
               [AIFA Fact-Check] Status Update: {emailPreviewRequest.referenceNumber} (
               {emailPreviewRequest.status})
             </span>
           </div>
           <div className="flex items-baseline">
-            <span className="w-16 font-semibold text-slate-400 uppercase tracking-wider text-[10px]">
-              Date:
-            </span>
-            <span className="text-slate-500">{emailPreviewRequest.lastUpdated || 'Just now'}</span>
+            <span className={headerLabel}>Date:</span>
+            <span className="text-[#6F6D69]">{emailPreviewRequest.lastUpdated || 'Just now'}</span>
           </div>
         </div>
 
         {/* Email Body Content */}
         <div className="p-6 space-y-4 max-h-[60vh] overflow-y-auto">
           {/* Sebenarnya.my Header */}
-          <div className="flex items-center justify-between pb-4 border-b border-slate-100">
+          <div className="flex flex-wrap items-center justify-between gap-3 pb-4 border-b border-[#E0DED9]">
             <div className="flex items-center gap-2.5">
-              <span className="w-9 h-9 rounded-xl bg-[#D93043] text-white flex items-center justify-center text-lg font-black shadow-sm">
-                🛡️
-              </span>
+              <img
+                src="/images/sebenarnya-icon.png"
+                alt=""
+                className="w-10 h-10 object-contain"
+                draggable={false}
+              />
               <div>
-                <div className="font-extrabold text-sm tracking-tight text-slate-900">
+                <div className="font-bold text-sm tracking-tight text-[#2A2A2A]">
                   SEBENARNYA.MY
                 </div>
-                <div className="text-[10px] text-slate-400 uppercase font-semibold">
+                <div className="text-[11px] text-[#6F6D69] font-medium">
                   Official Verification Portal
                 </div>
               </div>
             </div>
 
             <span
-              className={`inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-bold ${
-                isCompleted
-                  ? 'bg-emerald-100 text-emerald-800'
-                  : 'bg-amber-100 text-amber-800'
+              className={`inline-flex items-center gap-1.5 px-3.5 py-1.5 rounded-full text-xs font-semibold ${
+                isCompleted ? 'bg-[#DCEFE2] text-[#2F6B45]' : 'bg-[#F4EBCB] text-[#715C1C]'
               }`}
             >
               {isCompleted ? (
@@ -124,10 +119,10 @@ export const AIFAEmailPreviewModal: React.FC = () => {
           </div>
 
           <div>
-            <p className="text-xs text-slate-700">
-              Dear <strong>AIFA Demo User</strong>,
+            <p className="text-sm text-[#2A2A2A]">
+              Dear <strong className="font-semibold">AIFA Demo User</strong>,
             </p>
-            <p className="text-xs text-slate-600 mt-2 leading-relaxed">
+            <p className="text-xs text-[#5C5A56] mt-2 leading-relaxed">
               {isCompleted
                 ? 'Our editorial and verification team at Sebenarnya.my has concluded the investigation for your submitted claim inquiry.'
                 : 'Your fact-check request has been assigned to an editorial researcher and is currently undergoing verification against official government gazettes and ministry records.'}
@@ -135,34 +130,32 @@ export const AIFAEmailPreviewModal: React.FC = () => {
           </div>
 
           {/* Claim Box */}
-          <div className="p-3.5 rounded-xl bg-slate-50 border border-slate-200 space-y-2">
-            <div className="flex items-center justify-between text-[11px]">
-              <span className="font-bold text-slate-500 uppercase tracking-wider">
-                Submitted Claim Details
-              </span>
+          <div className="p-4 rounded-[22px] bg-white space-y-2.5">
+            <div className="flex items-center justify-between gap-2 text-[11px]">
+              <span className="text-[13px] font-semibold text-[#2A2A2A]">Submitted Claim Details</span>
               <span className="font-mono font-bold text-[#D93043]">
                 {emailPreviewRequest.referenceNumber}
               </span>
             </div>
-            <div className="text-xs font-medium text-slate-900 italic bg-white p-2.5 rounded border border-slate-200">
+            <div className="text-sm font-medium text-[#2A2A2A] italic bg-[#F4F3F1] p-3.5 rounded-2xl">
               "{emailPreviewRequest.claimText}"
             </div>
-            <div className="text-[11px] text-slate-500">
-              Source: <span className="font-medium text-slate-700">{emailPreviewRequest.title}</span> ({emailPreviewRequest.sourcePlatform})
+            <div className="text-[11px] text-[#6F6D69]">
+              Source: <span className="font-semibold text-[#2A2A2A]">{emailPreviewRequest.title}</span> ({emailPreviewRequest.sourcePlatform})
             </div>
           </div>
 
           {/* Review Conclusion if Completed */}
           {isCompleted && (
-            <div className="p-4 rounded-xl bg-emerald-50/70 border border-emerald-200 space-y-2">
-              <div className="flex items-center gap-2 text-xs font-bold text-emerald-900">
-                <ShieldCheck className="w-4 h-4 text-emerald-600" />
+            <div className="p-5 rounded-[22px] bg-[#DFE6F5] space-y-2">
+              <div className="flex items-center gap-2 text-sm font-semibold text-[#1F2F55]">
+                <ShieldCheck className="w-4 h-4 text-[#3F5C9E]" />
                 <span>Sebenarnya.my Verification Finding: FALSE CLAIM</span>
               </div>
-              <p className="text-xs text-emerald-950 leading-relaxed">
+              <p className="text-xs text-[#2E3A55] leading-relaxed">
                 The Ministry of Finance and Prime Minister's Department have confirmed that no such mandatory annual RM500 administrative contribution has ever been legislated or planned. Circulating forwards stem from altered graphics and unverified community chat chains.
               </p>
-              <div className="text-[11px] text-emerald-800 font-mono">
+              <div className="text-[11px] text-[#3F5C9E] font-mono font-semibold">
                 Official ref: SEB-2026-NOV-8842
               </div>
             </div>
@@ -173,7 +166,7 @@ export const AIFAEmailPreviewModal: React.FC = () => {
             <button
               type="button"
               onClick={handleOpenDashboard}
-              className="px-5 py-2.5 bg-[#D93043] hover:bg-[#B72435] text-white rounded-xl text-xs font-bold shadow transition-all flex items-center gap-2 cursor-pointer"
+              className="h-11 px-6 bg-[#2A2A2A] hover:bg-black text-white rounded-full text-xs font-semibold transition-colors flex items-center gap-2 cursor-pointer"
             >
               <span>View Full Report on Sebenarnya.my Dashboard</span>
               <ExternalLink className="w-3.5 h-3.5" />
@@ -181,17 +174,17 @@ export const AIFAEmailPreviewModal: React.FC = () => {
           </div>
 
           {/* Demonstration Notice */}
-          <div className="text-center text-[10px] text-slate-400 border-t border-slate-100 pt-3">
+          <div className="text-center text-[11px] text-[#6F6D69] border-t border-[#E0DED9] pt-3">
             Simulated demonstration email preview. No actual emails are dispatched.
           </div>
         </div>
 
         {/* Footer */}
-        <div className="px-6 py-3 bg-slate-50 border-t border-slate-200 flex justify-end">
+        <div className="px-6 py-4 border-t border-[#E0DED9] flex justify-end">
           <button
             type="button"
             onClick={closeEmailPreview}
-            className="px-4 py-1.5 text-xs font-semibold text-slate-700 hover:bg-slate-200/70 rounded-lg transition-colors cursor-pointer"
+            className="h-10 px-5 text-xs font-semibold text-[#2A2A2A] border border-[#2A2A2A]/15 hover:bg-[#E2E4EA] rounded-full transition-colors cursor-pointer"
           >
             Close Preview
           </button>

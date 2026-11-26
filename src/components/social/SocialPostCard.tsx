@@ -1,7 +1,6 @@
 import React from 'react';
 import { SocialPost } from '../../types/social';
 import { useAifa } from '../../context/AifaContext';
-import { SocialImageWithOcr } from './SocialImageWithOcr';
 import {
   ShieldCheck,
   Heart,
@@ -35,9 +34,7 @@ export const SocialPostCard: React.FC<SocialPostCardProps> = ({ post }) => {
     }
 
     // Check if any claim in verificationResult matches caption
-    const claim = verificationResult.claims.find(
-      (c) => c.postId === post.id && (c.locationType === 'caption' || c.locationType === 'both')
-    );
+    const claim = verificationResult.claims.find((c) => c.postId === post.id);
 
     if (!claim) return caption;
 
@@ -59,7 +56,7 @@ export const SocialPostCard: React.FC<SocialPostCardProps> = ({ post }) => {
         {before}
         <span
           data-aifa-claim-id={claim.id}
-          onClick={() => locateClaimInSocialPost(claim.id, 'caption')}
+          onClick={() => locateClaimInSocialPost(claim.id)}
           title={`AIFA Claim: ${claim.verdictLabel} (Click to inspect in verification panel)`}
           className={`transition-all duration-200 cursor-pointer rounded px-1 py-0.5 inline ${
             isSelected
@@ -169,10 +166,10 @@ export const SocialPostCard: React.FC<SocialPostCardProps> = ({ post }) => {
         </p>
       </div>
 
-      {/* Attached Image with OCR Highlighting */}
-      {post.imageOcr && (
-        <div className="mb-3">
-          <SocialImageWithOcr imageOcr={post.imageOcr} postId={post.id} />
+      {/* Attached Image */}
+      {post.image && (
+        <div className="mb-3 rounded-xl overflow-hidden border border-slate-200 bg-slate-100 aspect-4/3">
+          <img src={post.image.url} alt={post.image.alt} className="w-full h-full object-cover" />
         </div>
       )}
 

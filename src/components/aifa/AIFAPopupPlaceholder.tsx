@@ -99,11 +99,6 @@ export const AIFAPopupPlaceholder: React.FC<AIFAPopupPlaceholderProps> = ({ isOp
               <p className="text-xs font-medium text-slate-800 line-clamp-2 leading-snug">
                 "{detectedSocialPost.caption}"
               </p>
-              {detectedSocialPost.imageOcr && (
-                <span className="text-[10px] text-amber-700 font-mono block pt-1">
-                  Attached image contains readable text (OCR ready)
-                </span>
-              )}
             </div>
 
             {panelMode === 'expanded' ? (
@@ -217,7 +212,7 @@ export const AIFAPopupPlaceholder: React.FC<AIFAPopupPlaceholderProps> = ({ isOp
                 <div className="text-[11px] text-slate-600 leading-normal">
                   <span className="font-semibold text-slate-800">Multi-Platform Scanner Active</span>
                   <p className="mt-0.5">
-                    AIFA automatically identifies news stories, social posts, and embedded image text.
+                    AIFA automatically identifies news stories and social posts.
                   </p>
                 </div>
               </div>
