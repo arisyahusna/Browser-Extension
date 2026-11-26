@@ -14,7 +14,7 @@ import { DashboardTab } from './dashboardTypes';
 
 export const SebenarnyaDashboard: React.FC = () => {
   const { currentLocation } = useBrowser();
-  const { isDashboardSignedIn, userProfile } = useAifa();
+  const { isSignedIn } = useAifa();
 
   const [activeTab, setActiveTab] = useState<DashboardTab>('overview');
   // Verdict filter History opens with; set by the Overview stat cards, reset by normal navigation.
@@ -60,7 +60,7 @@ export const SebenarnyaDashboard: React.FC = () => {
   );
 
   // Signed out (or the account was disconnected from the extension): show the login page.
-  if (!isDashboardSignedIn || !userProfile.isConnected) {
+  if (!isSignedIn) {
     return <DashboardLogin />;
   }
 

@@ -19,6 +19,7 @@ import {
   NotificationItem,
   UserProfile,
   NotificationPreferences,
+  AppLanguage,
 } from '../types/aifa';
 import { SocialPost, FactCheckRequest } from '../types/social';
 import { useBrowser } from './BrowserContext';
@@ -38,7 +39,8 @@ import {
 
 const AifaContext = createContext<AifaContextType | undefined>(undefined);
 
-const DASHBOARD_SESSION_KEY = 'aifa_dashboard_session';
+// One sign-in for the extension and the dashboard. (Key name kept so existing sessions survive.)
+const SESSION_KEY = 'aifa_dashboard_session';
 
 /** "arisya.husna@x.com" → "Arisya Husna"; the demo address keeps its seeded display name. */
 const nameFromEmail = (email: string) => {
@@ -50,8 +52,17 @@ const nameFromEmail = (email: string) => {
 };
 
 export const AifaProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
-  const { currentLocation, activeTabId, displayUrl, refreshNonce } = useBrowser();
+  const { currentLocation, activeTabId, displayUrl, refreshNonce, setAifaPopupOpen } = useBrowser();
   const [isExtensionEnabled, setIsExtensionEnabled] = useState(true);
+
+  // Interface language. Only the toggle exists so far; text is not translated yet.
+  const [language, setLanguageState] = useState<AppLanguage>(() =>
+    localStorage.getItem('aifa_language') === 'ms' ? 'ms' : 'en'
+  );
+  const setLanguage = useCallback((lang: AppLanguage) => {
+    setLanguageState(lang);
+    localStorage.setItem('aifa_language', lang);
+  }, []);
 
   // Auth & Connection State (Stage 5)
   const [userProfile, setUserProfile] = useState<UserProfile>(() => {
@@ -61,14 +72,16 @@ export const AifaProvider: React.FC<{ children: React.ReactNode }> = ({ children
   const [isConnectingAccount, setIsConnectingAccount] = useState(false);
   const [isSignInModalOpen, setSignInModalOpen] = useState(false);
 
-  // Dashboard session: the dashboard shows its login page until this is set.
-  // "Remember me" keeps it in localStorage; otherwise it lasts for this browser session.
-  const [isDashboardSignedIn, setIsDashboardSignedIn] = useState<boolean>(
+  // Sign-in session shared by the extension popup and the dashboard: both show their sign-in
+  // screen until it is set. "Keep me signed in" uses localStorage; otherwise it lasts for this
+  // browser session.
+  const [hasSession, setHasSession] = useState<boolean>(
     () =>
-      localStorage.getItem(DASHBOARD_SESSION_KEY) === 'true' ||
-      sessionStorage.getItem(DASHBOARD_SESSION_KEY) === 'true'
+      localStorage.getItem(SESSION_KEY) === 'true' ||
+      sessionStorage.getItem(SESSION_KEY) === 'true'
   );
-  const [isSigningInToDashboard, setIsSigningInToDashboard] = useState(false);
+  const [isSigningIn, setIsSigningIn] = useState(false);
+  const isSignedIn = hasSession && userProfile.isConnected;
 
   // Onboarding State (Stage 5)
   const [isOnboardingCompleted, setIsOnboardingCompleted] = useState<boolean>(() => {
@@ -247,6 +260,8 @@ export const AifaProvider: React.FC<{ children: React.ReactNode }> = ({ children
         isConnected: true,
         connectedAt: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
       });
+      sessionStorage.setItem(SESSION_KEY, 'true');
+      setHasSession(true);
       setIsConnectingAccount(false);
       setSignInModalOpen(false);
 
@@ -257,26 +272,26 @@ export const AifaProvider: React.FC<{ children: React.ReactNode }> = ({ children
     }, 700);
   }, [isOnboardingCompleted]);
 
-  const clearDashboardSession = useCallback(() => {
-    localStorage.removeItem(DASHBOARD_SESSION_KEY);
-    sessionStorage.removeItem(DASHBOARD_SESSION_KEY);
-    setIsDashboardSignedIn(false);
+  const clearSession = useCallback(() => {
+    localStorage.removeItem(SESSION_KEY);
+    sessionStorage.removeItem(SESSION_KEY);
+    setHasSession(false);
   }, []);
 
-  // Logging out disconnects the account, so it also ends the dashboard session.
+  // Logging out disconnects the account, so it also ends the sign-in session.
   const disconnectAccount = useCallback(() => {
     setUserProfile((prev) => ({
       ...prev,
       isConnected: false,
       connectedAt: undefined,
     }));
-    clearDashboardSession();
-  }, [clearDashboardSession]);
+    clearSession();
+  }, [clearSession]);
 
   // Simulated sign-in: any well-formed email and password is accepted.
-  const signInToDashboard = useCallback(
-    (email: string, remember: boolean) => {
-      setIsSigningInToDashboard(true);
+  const signIn = useCallback(
+    (email: string, remember: boolean, options: { openOnboarding?: boolean } = {}) => {
+      setIsSigningIn(true);
       setTimeout(() => {
         const normalized = email.trim().toLowerCase();
         setUserProfile({
@@ -293,12 +308,12 @@ export const AifaProvider: React.FC<{ children: React.ReactNode }> = ({ children
             hour12: true,
           }),
         });
-        (remember ? localStorage : sessionStorage).setItem(DASHBOARD_SESSION_KEY, 'true');
-        setIsDashboardSignedIn(true);
-        setIsSigningInToDashboard(false);
+        (remember ? localStorage : sessionStorage).setItem(SESSION_KEY, 'true');
+        setHasSession(true);
+        setIsSigningIn(false);
 
-        // Same as connecting from the extension: first sign-in opens the guided tour.
-        if (!isOnboardingCompleted) {
+        // First sign-in opens the guided tour, unless the caller shows it itself (the popup does).
+        if (!isOnboardingCompleted && options.openOnboarding !== false) {
           setIsOnboardingOpen(true);
         }
       }, 900);
@@ -381,9 +396,9 @@ export const AifaProvider: React.FC<{ children: React.ReactNode }> = ({ children
   // Trigger verification sequence and append to history on completion
   const triggerVerification = useCallback(
     (socialPost?: SocialPost) => {
-      // Check auth connection: if not connected, prompt sign in
-      if (!userProfile.isConnected) {
-        setSignInModalOpen(true);
+      // Signed out: open the extension popup, which shows its sign-in screen.
+      if (!isSignedIn) {
+        setAifaPopupOpen(true);
         return;
       }
 
@@ -455,7 +470,7 @@ export const AifaProvider: React.FC<{ children: React.ReactNode }> = ({ children
 
       analysisTimersRef.current = [t1, t2, t3];
     },
-    [clearAnalysisTimers, detectedSocialPost, detectedArticle, userProfile.isConnected]
+    [clearAnalysisTimers, detectedSocialPost, detectedArticle, isSignedIn, setAifaPopupOpen]
   );
 
   const resetVerification = useCallback(() => {
@@ -662,7 +677,7 @@ export const AifaProvider: React.FC<{ children: React.ReactNode }> = ({ children
     localStorage.removeItem('aifa_fact_check_requests');
     localStorage.removeItem('aifa_notifications');
     localStorage.removeItem('aifa_onboarding_completed');
-    clearDashboardSession();
+    clearSession();
 
     setUserProfile(INITIAL_USER_PROFILE);
     setVerificationHistory(INITIAL_HISTORY);
@@ -670,7 +685,7 @@ export const AifaProvider: React.FC<{ children: React.ReactNode }> = ({ children
     setNotifications(INITIAL_NOTIFICATIONS);
     setIsOnboardingCompleted(false);
     resetVerification();
-  }, [resetVerification, clearDashboardSession]);
+  }, [resetVerification, clearSession]);
 
   // Notifications Operations
   const markNotificationAsRead = useCallback((id: string) => {
@@ -715,11 +730,13 @@ export const AifaProvider: React.FC<{ children: React.ReactNode }> = ({ children
       disconnectAccount,
       isSignInModalOpen,
       setSignInModalOpen,
-      isDashboardSignedIn,
-      isSigningInToDashboard,
-      signInToDashboard,
+      isSignedIn,
+      isSigningIn,
+      signIn,
       isExtensionEnabled,
       toggleExtension,
+      language,
+      setLanguage,
       isOnboardingCompleted,
       isOnboardingOpen,
       openOnboarding,
@@ -787,11 +804,13 @@ export const AifaProvider: React.FC<{ children: React.ReactNode }> = ({ children
       connectAccount,
       disconnectAccount,
       isSignInModalOpen,
-      isDashboardSignedIn,
-      isSigningInToDashboard,
-      signInToDashboard,
+      isSignedIn,
+      isSigningIn,
+      signIn,
       isExtensionEnabled,
       toggleExtension,
+      language,
+      setLanguage,
       isOnboardingCompleted,
       isOnboardingOpen,
       openOnboarding,

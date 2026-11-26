@@ -11,6 +11,9 @@ export interface DetectedArticleInfo {
   sourceUrl: string;
 }
 
+/** 'en' = English, 'ms' = Bahasa Melayu. */
+export type AppLanguage = 'en' | 'ms';
+
 export type ClaimVerdict = 'supported' | 'false' | 'misleading' | 'unverified';
 export type OverallAssessment = 'supported' | 'false' | 'misleading' | 'mixed' | 'unverified';
 export type PanelDisplayMode = 'expanded' | 'minimized' | 'closed';
@@ -103,14 +106,18 @@ export interface AifaContextType {
   isSignInModalOpen: boolean;
   setSignInModalOpen: (open: boolean) => void;
 
-  // Dashboard login (the dashboard shows its login page until signed in)
-  isDashboardSignedIn: boolean;
-  isSigningInToDashboard: boolean;
-  signInToDashboard: (email: string, remember: boolean) => void;
+  // Sign-in shared by the extension popup and the dashboard (both show a sign-in screen until signed in)
+  isSignedIn: boolean;
+  isSigningIn: boolean;
+  signIn: (email: string, remember: boolean, options?: { openOnboarding?: boolean }) => void;
 
   // Extension enablement
   isExtensionEnabled: boolean;
   toggleExtension: () => void;
+
+  // Interface language (toggle only; translations come later)
+  language: AppLanguage;
+  setLanguage: (lang: AppLanguage) => void;
   
   // Onboarding
   isOnboardingCompleted: boolean;

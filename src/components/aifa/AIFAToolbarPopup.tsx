@@ -18,6 +18,8 @@ import {
 import { useAifa } from '../../context/AifaContext';
 import { AIFAChatbotView, ChatMessage } from './AIFAChatbotView';
 import { AIFASettingsContent } from './AIFASettingsContent';
+import { AIFASignInForm } from './AIFASignInForm';
+import { AIFALanguageToggle } from './AIFALanguageToggle';
 import { AIFAUserGuideContent, GUIDE_STEP_COUNT } from './AIFAUserGuideContent';
 import { OverallAssessment } from '../../types/aifa';
 import { FactCheckRequestStatus } from '../../types/social';
@@ -94,8 +96,10 @@ export const AIFAToolbarPopup: React.FC<AIFAToolbarPopupProps> = ({ isOpen, onCl
     userProfile,
     setSignInModalOpen,
     completeOnboarding,
+    isOnboardingCompleted,
     isExtensionEnabled,
     toggleExtension,
+    isSignedIn,
   } = useAifa();
 
   const [view, setView] = useState<PopupView>('main');
@@ -119,6 +123,18 @@ export const AIFAToolbarPopup: React.FC<AIFAToolbarPopupProps> = ({ isOpen, onCl
   useEffect(() => {
     setChatMessages([]);
   }, [chatContentKey]);
+
+  // Right after signing in here, first-time users get the guide inside the popup;
+  // everyone else lands on the main screen.
+  const wasSignedIn = useRef(isSignedIn);
+  useEffect(() => {
+    if (isSignedIn && !wasSignedIn.current && isOpen) {
+      if (isOnboardingCompleted) setView('main');
+      else openGuide();
+    }
+    wasSignedIn.current = isSignedIn;
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [isSignedIn]);
 
   // Always reopen on the main page.
   useEffect(() => {
@@ -493,6 +509,8 @@ export const AIFAToolbarPopup: React.FC<AIFAToolbarPopupProps> = ({ isOpen, onCl
           draggable={false}
         />
         <div className="flex items-center gap-2">
+          <AIFALanguageToggle />
+          {isSignedIn && (
           <button
             type="button"
             role="switch"
@@ -528,13 +546,23 @@ export const AIFAToolbarPopup: React.FC<AIFAToolbarPopupProps> = ({ isOpen, onCl
               />
             </span>
           </button>
+          )}
           <button type="button" onClick={onClose} className={roundIconButton} aria-label="Close popup">
             <X className="w-4 h-4" />
           </button>
         </div>
       </div>
 
-      {view === 'chat' ? (
+      {!isSignedIn ? (
+        // Signed out: the extension can't be used until the user signs in.
+        <div className="max-h-[75vh] overflow-y-auto px-4 pt-1 pb-4 select-text">
+          <h2 className="text-lg font-bold tracking-tight text-[#2A2A2A]">Sign in to AIFA</h2>
+          <p className="mt-1 mb-4 text-xs text-[#6F6D69] leading-relaxed">
+            Sign in with your Sebenarnya.my account to verify articles and posts as you browse.
+          </p>
+          <AIFASignInForm compact openOnboarding={false} />
+        </div>
+      ) : view === 'chat' ? (
         <AIFAChatbotView
           messages={chatMessages}
           setMessages={setChatMessages}
