@@ -131,7 +131,7 @@ export const DashboardOverview: React.FC<DashboardOverviewProps> = ({ onSwitchTa
       {/* 1. Welcome hero */}
       <section className="relative overflow-hidden py-2">
         <img
-          src="/images/sebenarnya-icon.png"
+          src={`${import.meta.env.BASE_URL}images/sebenarnya-icon.png`}
           alt=""
           aria-hidden="true"
           draggable={false}

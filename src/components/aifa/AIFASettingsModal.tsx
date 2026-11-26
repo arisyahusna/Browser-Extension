@@ -19,7 +19,7 @@ export const AIFASettingsModal: React.FC = () => {
         {/* Header */}
         <div className="px-6 pt-5 pb-3 flex items-center justify-between gap-3">
           <div className="flex items-center gap-3">
-            <img src="/images/sebenarnya-icon.png" alt="" className="w-9 h-9 object-contain" draggable={false} />
+            <img src={`${import.meta.env.BASE_URL}images/sebenarnya-icon.png`} alt="" className="w-9 h-9 object-contain" draggable={false} />
             <div>
               <h2 id="settings-modal-title" className="text-lg font-bold text-[#2A2A2A] tracking-tight">
                 Extension Settings

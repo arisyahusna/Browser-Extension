@@ -144,7 +144,7 @@ export const DashboardHeader: React.FC<DashboardHeaderProps> = ({ activeTab, onN
             className="shrink-0 rounded-full p-1 -m-1 cursor-pointer focus:outline-none focus-visible:ring-2 focus-visible:ring-[#5774BC]/40"
           >
             <img
-              src="/images/sebenarnya-logo.png"
+              src={`${import.meta.env.BASE_URL}images/sebenarnya-logo.png`}
               alt="Sebenarnya.my"
               className="h-9 w-auto select-none"
               draggable={false}

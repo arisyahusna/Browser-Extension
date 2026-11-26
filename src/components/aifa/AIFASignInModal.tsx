@@ -28,7 +28,7 @@ export const AIFASignInModal: React.FC = () => {
 
           <div className="flex items-center gap-2.5 mb-3">
             <img
-              src="/images/sebenarnya-icon.png"
+              src={`${import.meta.env.BASE_URL}images/sebenarnya-icon.png`}
               alt=""
               className="w-9 h-9 object-contain rounded-lg bg-white p-0.5"
               draggable={false}

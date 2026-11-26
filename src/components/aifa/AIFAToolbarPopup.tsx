@@ -399,7 +399,7 @@ export const AIFAToolbarPopup: React.FC<AIFAToolbarPopupProps> = ({ isOpen, onCl
       {/* Header: official logo + ON/OFF + close */}
       <div className="px-4 pt-4 pb-3 flex items-center justify-between gap-2">
         <img
-          src="/images/sebenarnya-logo.png"
+          src={`${import.meta.env.BASE_URL}images/sebenarnya-logo.png`}
           alt="Sebenarnya.my"
           className="h-8 w-auto"
           draggable={false}

@@ -84,7 +84,7 @@ export const AIFAEmailPreviewModal: React.FC = () => {
           <div className="flex flex-wrap items-center justify-between gap-3 pb-4 border-b border-[#E0DED9]">
             <div className="flex items-center gap-2.5">
               <img
-                src="/images/sebenarnya-icon.png"
+                src={`${import.meta.env.BASE_URL}images/sebenarnya-icon.png`}
                 alt=""
                 className="w-10 h-10 object-contain"
                 draggable={false}

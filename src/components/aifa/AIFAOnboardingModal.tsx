@@ -25,7 +25,7 @@ export const AIFAOnboardingModal: React.FC = () => {
         {/* Top bar */}
         <div className="px-6 pt-5 pb-2 flex items-center justify-between">
           <div className="flex items-center gap-2.5">
-            <img src="/images/sebenarnya-icon.png" alt="" className="w-8 h-8 object-contain" draggable={false} />
+            <img src={`${import.meta.env.BASE_URL}images/sebenarnya-icon.png`} alt="" className="w-8 h-8 object-contain" draggable={false} />
             <span className="text-sm font-semibold text-[#2A2A2A]">User Guide</span>
           </div>
 

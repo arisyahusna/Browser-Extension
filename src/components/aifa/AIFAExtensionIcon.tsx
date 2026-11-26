@@ -30,7 +30,7 @@ export const AIFAExtensionIcon: React.FC<AIFAExtensionIconProps> = ({ isOpen, on
       {/* Sebenarnya.my extension icon */}
       <div className="relative flex items-center justify-center">
         <img
-          src="/images/sebenarnya-icon.png"
+          src={`${import.meta.env.BASE_URL}images/sebenarnya-icon.png`}
           alt=""
           draggable={false}
           className={`w-5 h-5 object-contain transition-transform duration-150 ${

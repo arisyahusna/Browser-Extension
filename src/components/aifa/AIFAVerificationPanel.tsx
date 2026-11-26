@@ -133,7 +133,7 @@ export const AIFAVerificationPanel: React.FC = () => {
             <ArrowLeft className="w-4 h-4" />
           </button>
           <img
-            src="/images/sebenarnya-icon.png"
+            src={`${import.meta.env.BASE_URL}images/sebenarnya-icon.png`}
             alt=""
             className="w-9 h-9 object-contain"
             draggable={false}

@@ -16,7 +16,7 @@ export const AIFAMinimizedFloatingButton: React.FC = () => {
         title="Restore AIFA Verification Panel"
       >
         <img
-          src="/images/sebenarnya-icon.png"
+          src={`${import.meta.env.BASE_URL}images/sebenarnya-icon.png`}
           alt=""
           className="w-8 h-8 rounded-full bg-white object-contain p-0.5"
           draggable={false}

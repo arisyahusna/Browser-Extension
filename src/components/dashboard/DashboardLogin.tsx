@@ -60,7 +60,7 @@ export const DashboardLogin: React.FC = () => {
         <main className="flex-1 min-w-0 flex items-center justify-center py-10">
           <div className="w-full max-w-[400px]">
             <img
-              src="/images/sebenarnya-logo.png"
+              src={`${import.meta.env.BASE_URL}images/sebenarnya-logo.png`}
               alt="Sebenarnya.my"
               className="h-10 w-auto select-none"
               draggable={false}
