@@ -13,6 +13,7 @@ import {
   ChevronDown,
   Inbox,
   BotMessageSquare,
+  Search,
 } from 'lucide-react';
 import { useAifa } from '../../context/AifaContext';
 import { AIFAChatbotView, ChatMessage } from './AIFAChatbotView';
@@ -99,6 +100,9 @@ export const AIFAToolbarPopup: React.FC<AIFAToolbarPopupProps> = ({ isOpen, onCl
 
   const [view, setView] = useState<PopupView>('main');
   const [expandedRequestId, setExpandedRequestId] = useState<string | null>(null);
+  // Submission History search: the box text, and the query applied by the Search button / Enter.
+  const [historySearchDraft, setHistorySearchDraft] = useState('');
+  const [historySearch, setHistorySearch] = useState('');
   const [guideStep, setGuideStep] = useState(0);
   // Remounts the guide so every visit starts at step 1.
   const [guideRun, setGuideRun] = useState(0);
@@ -121,6 +125,8 @@ export const AIFAToolbarPopup: React.FC<AIFAToolbarPopupProps> = ({ isOpen, onCl
     if (!isOpen) {
       setView('main');
       setExpandedRequestId(null);
+      setHistorySearchDraft('');
+      setHistorySearch('');
     }
   }, [isOpen]);
 
@@ -292,7 +298,23 @@ export const AIFAToolbarPopup: React.FC<AIFAToolbarPopupProps> = ({ isOpen, onCl
     );
   };
 
-  const renderHistoryView = () => (
+  const clearHistorySearch = () => {
+    setHistorySearchDraft('');
+    setHistorySearch('');
+  };
+
+  const renderHistoryView = () => {
+    // Matches the title, claim, reference number, source, status or the user's notes.
+    const query = historySearch.trim().toLowerCase();
+    const results = query
+      ? submittedRequests.filter((req) =>
+          [req.title, req.claimText, req.referenceNumber, req.sourcePlatform, req.status, req.additionalNotes]
+            .filter(Boolean)
+            .some((field) => field!.toLowerCase().includes(query))
+        )
+      : submittedRequests;
+
+    return (
     <div className="flex flex-col">
       <div className="px-4 pb-2 flex items-center gap-2">
         <button
@@ -304,10 +326,60 @@ export const AIFAToolbarPopup: React.FC<AIFAToolbarPopupProps> = ({ isOpen, onCl
           <ArrowLeft className="w-4 h-4" />
         </button>
         <h3 className="text-sm font-semibold text-[#2A2A2A]">Submission History</h3>
-        <span className="ml-auto min-w-[24px] text-center text-[11px] font-semibold px-2 py-0.5 rounded-full bg-[#2A2A2A] text-white">
-          {submittedRequests.length}
+        <span
+          className="ml-auto min-w-[24px] text-center text-[11px] font-semibold px-2 py-0.5 rounded-full bg-[#2A2A2A] text-white"
+          aria-label={query ? `${results.length} of ${submittedRequests.length} submissions` : `${submittedRequests.length} submissions`}
+        >
+          {query ? `${results.length}/${submittedRequests.length}` : submittedRequests.length}
         </span>
       </div>
+
+      {/* Search form */}
+      {submittedRequests.length > 0 && (
+        <form
+          role="search"
+          aria-label="Search submissions"
+          onSubmit={(e) => {
+            e.preventDefault();
+            setHistorySearch(historySearchDraft);
+            setExpandedRequestId(null);
+          }}
+          className="px-3 pb-3 flex items-center gap-2"
+        >
+          <div className="flex-1 min-w-0 h-10 pl-3.5 pr-1 rounded-full bg-white border border-[#E0DED9] flex items-center gap-2 focus-within:border-[#5774BC] focus-within:ring-2 focus-within:ring-[#5774BC]/20 transition-colors">
+            <Search className="w-3.5 h-3.5 text-[#6F6D69] shrink-0" aria-hidden="true" />
+            <input
+              type="search"
+              value={historySearchDraft}
+              onChange={(e) => {
+                setHistorySearchDraft(e.target.value);
+                // Emptying the box shows everything again without needing the button.
+                if (!e.target.value) setHistorySearch('');
+              }}
+              placeholder="Title, claim or reference no."
+              aria-label="Search submissions"
+              className="flex-1 min-w-0 bg-transparent text-xs text-[#2A2A2A] outline-none placeholder:text-[#A3A19B] [&::-webkit-search-cancel-button]:hidden"
+            />
+            {historySearchDraft && (
+              <button
+                type="button"
+                onClick={clearHistorySearch}
+                aria-label="Clear search"
+                className="w-7 h-7 shrink-0 rounded-full flex items-center justify-center text-[#6F6D69] hover:bg-[#E2E4EA] hover:text-[#2A2A2A] transition-colors cursor-pointer"
+              >
+                <X className="w-3.5 h-3.5" />
+              </button>
+            )}
+          </div>
+          <button
+            type="submit"
+            className="h-10 px-4 shrink-0 rounded-full bg-[#2A2A2A] hover:bg-black text-white text-xs font-semibold flex items-center gap-1.5 transition-colors cursor-pointer focus:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:ring-offset-[#EEEFF3] focus-visible:ring-[#5774BC]/50"
+          >
+            <Search className="w-3.5 h-3.5" aria-hidden="true" />
+            
+          </button>
+        </form>
+      )}
 
       {submittedRequests.length === 0 ? (
         <div className="mx-3 mb-3 px-6 py-10 text-center bg-white rounded-[22px]">
@@ -317,9 +389,24 @@ export const AIFAToolbarPopup: React.FC<AIFAToolbarPopupProps> = ({ isOpen, onCl
             Claims you send to Sebenarnya.my for fact-checking will appear here.
           </p>
         </div>
+      ) : results.length === 0 ? (
+        <div role="status" className="mx-3 mb-3 px-6 py-8 text-center bg-white rounded-[22px]">
+          <Search className="w-6 h-6 text-[#6F6D69]/50 mx-auto" aria-hidden="true" />
+          <p className="mt-2 text-sm font-semibold text-[#2A2A2A]">No matching submissions</p>
+          <p className="mt-1 text-xs text-[#6F6D69] leading-relaxed break-words">
+            Nothing matches "{historySearch.trim()}". Try a different word or reference number.
+          </p>
+          <button
+            type="button"
+            onClick={clearHistorySearch}
+            className="mt-3 h-8 px-3.5 rounded-full border border-[#2A2A2A]/15 text-xs font-semibold text-[#2A2A2A] hover:bg-[#E2E4EA] transition-colors cursor-pointer"
+          >
+            Clear search
+          </button>
+        </div>
       ) : (
         <ul className="px-3 pb-3 space-y-2">
-          {submittedRequests.map((req) => {
+          {results.map((req) => {
             const isExpanded = expandedRequestId === req.id;
             return (
               <li key={req.id} className="rounded-[20px] bg-white overflow-hidden">
@@ -384,7 +471,8 @@ export const AIFAToolbarPopup: React.FC<AIFAToolbarPopupProps> = ({ isOpen, onCl
         </ul>
       )}
     </div>
-  );
+    );
+  };
 
   return (
     <div
