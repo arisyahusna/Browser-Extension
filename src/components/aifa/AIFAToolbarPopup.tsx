@@ -205,7 +205,7 @@ export const AIFAToolbarPopup: React.FC<AIFAToolbarPopupProps> = ({ isOpen, onCl
       {/* Most recent verification */}
       <section className="space-y-2">
         <div className="flex items-center justify-between px-1">
-          <h3 className="text-[13px] font-semibold text-[#2A2A2A]">Recent verification</h3>
+          <h3 className="text-[13px] font-semibold text-[#2A2A2A]">My Reports</h3>
           <button
             type="button"
             onClick={() => setView('history')}
