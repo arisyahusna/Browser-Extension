@@ -34,6 +34,61 @@
   background: #94A3B8;
 }
 
+/* ---------------------------------------------------------------------------
+   Design-system guard. The extension pages load the Sebenarnya design system
+   (src/extension/extension.css), whose Tailwind preflight, base.css and ui.css
+   style bare elements for the whole document. Outside the extension pages
+   (.sb-extension) restore this simulation's own defaults. Selectors stay at
+   element-level specificity, so every utility class still wins.
+   --------------------------------------------------------------------------- */
+html :where(:not(.sb-extension, .sb-extension *)),
+html :where(:not(.sb-extension, .sb-extension *))::before,
+html :where(:not(.sb-extension, .sb-extension *))::after {
+  border-color: #e5e7eb;
+}
+html body {
+  word-wrap: normal;
+  word-break: normal;
+}
+html h1:where(:not(.sb-extension *)),
+html h2:where(:not(.sb-extension *)),
+html h3:where(:not(.sb-extension *)),
+html h4:where(:not(.sb-extension *)),
+html h5:where(:not(.sb-extension *)),
+html h6:where(:not(.sb-extension *)) {
+  font-family: inherit;
+  font-weight: inherit;
+  line-height: inherit;
+}
+html a:where(:not(.sb-extension *)) {
+  color: inherit;
+  text-decoration: inherit;
+}
+html b:where(:not(.sb-extension *)),
+html strong:where(:not(.sb-extension *)) {
+  font-weight: bolder;
+}
+html button:where(:not(.sb-extension *)),
+html input:where(:not(.sb-extension *)),
+html select:where(:not(.sb-extension *)),
+html textarea:where(:not(.sb-extension *)) {
+  font-family: inherit;
+  line-height: inherit;
+}
+html input:where(:not(.sb-extension *)) {
+  color: inherit;
+  border: 0 solid #e5e7eb;
+  outline: revert;
+  background-color: revert;
+}
+html input:where(:not(.sb-extension *))::placeholder {
+  color: #9ca3af;
+}
+html :where(:not(.sb-extension, .sb-extension *):focus-visible) {
+  outline: revert;
+  outline-offset: revert;
+}
+
 /* Hide scrollbar for tab bar */
 .no-scrollbar::-webkit-scrollbar {
   display: none;

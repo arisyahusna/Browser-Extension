@@ -1,16 +1,11 @@
 import React, { useState, useEffect, useRef, useCallback } from 'react';
 import { useBrowser } from '../../context/BrowserContext';
 import { useAifa } from '../../context/AifaContext';
-import { DashboardLogin } from './DashboardLogin';
-import { DashboardOverview } from './DashboardOverview';
-import { DashboardHistory } from './DashboardHistory';
-import { DashboardAnalytics } from './DashboardAnalytics';
-import { DashboardRequests } from './DashboardRequests';
-import { DashboardNotifications } from './DashboardNotifications';
-import { DashboardSettings } from './DashboardSettings';
-import { DashboardHeader } from './DashboardHeader';
+import { DashboardLogin } from '../../dashboard/DashboardLogin';
+import { DashboardHeader } from '../../dashboard/DashboardHeader';
+import { DashboardMain } from '../../dashboard/DashboardMain';
 import { DashboardSidebar } from './DashboardSidebar';
-import { DashboardTab } from './dashboardTypes';
+import { DashboardTab } from '../../dashboard/dashboardTypes';
 
 export const SebenarnyaDashboard: React.FC = () => {
   const { currentLocation } = useBrowser();
@@ -64,8 +59,11 @@ export const SebenarnyaDashboard: React.FC = () => {
     return <DashboardLogin />;
   }
 
+  // Layout shell only. The header and the pages use the Sebenarnya design system (src/dashboard,
+  // each wrapped in its own .sb-extension scope); the sidebar keeps its own design, so it stays
+  // outside that scope. The page background reads the design-system token.
   return (
-    <div className="h-full min-h-0 bg-[#eeeff3] text-[#2A2A2A] flex flex-col font-['Montserrat',sans-serif] antialiased select-text">
+    <div className="h-full min-h-0 bg-[var(--color-muted)] text-[#2A2A2A] flex flex-col font-['Montserrat',sans-serif] antialiased select-text">
       {/* 1. Top navigation bar */}
       <DashboardHeader activeTab={activeTab} onNavigate={navigateTo} />
 
@@ -75,34 +73,12 @@ export const SebenarnyaDashboard: React.FC = () => {
 
         {/* 3. Scrollable content column */}
         <div ref={mainRef} className="flex-1 min-w-0 overflow-y-auto flex flex-col">
-          <main className="flex-1 w-full max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 pt-2 pb-8 lg:pt-4">
-            {activeTab === 'overview' && (
-              <DashboardOverview onSwitchTab={navigateTo} onOpenHistory={openHistoryFiltered} />
-            )}
-            {activeTab === 'analytics' && (
-              <DashboardAnalytics onSwitchTab={navigateTo} onOpenHistory={openHistoryFiltered} />
-            )}
-            {activeTab === 'history' && (
-              <DashboardHistory key={historyFilter} initialAssessmentFilter={historyFilter} />
-            )}
-            {activeTab === 'requests' && <DashboardRequests />}
-            {activeTab === 'notifications' && <DashboardNotifications onSwitchTab={navigateTo} />}
-            {activeTab === 'settings' && <DashboardSettings />}
-          </main>
-
-          {/* Footer */}
-          <footer className="py-5 text-xs text-[#6F6D69]">
-            <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 flex flex-col sm:flex-row items-center justify-between gap-2">
-              <div className="flex items-center gap-2">
-                <span className="font-semibold text-[#2A2A2A]">Sebenarnya.my</span>
-                <span aria-hidden="true">•</span>
-                <span>AIFA Interactive Client Simulation Prototype (Stage 5)</span>
-              </div>
-              <div className="text-[11px] text-[#6F6D69]">
-                Sebenarnya.my Fact-Checking Initiative • Strictly for client demonstration
-              </div>
-            </div>
-          </footer>
+          <DashboardMain
+            activeTab={activeTab}
+            historyFilter={historyFilter}
+            onNavigate={navigateTo}
+            onOpenHistory={openHistoryFiltered}
+          />
         </div>
       </div>
     </div>

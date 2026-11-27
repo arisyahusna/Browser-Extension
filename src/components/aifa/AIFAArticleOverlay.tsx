@@ -1,7 +1,7 @@
 import React from 'react';
 import { ShieldCheck } from 'lucide-react';
 import { useAifa } from '../../context/AifaContext';
-import { AIFAVerifyButton } from './AIFAVerifyButton';
+import { AIFAVerifyButton } from '../../extension/content/AIFAVerifyButton';
 
 export const AIFAArticleOverlay: React.FC = () => {
   const { isHighlighted, detectedArticle } = useAifa();

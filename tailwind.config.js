@@ -3,6 +3,9 @@ export default {
   content: [
     "./index.html",
     "./src/**/*.{js,ts,jsx,tsx}",
+    // Extension pages and the Sebenarnya dashboard use the design system build (tailwind.extension.config.cjs).
+    "!./src/extension/**",
+    "!./src/dashboard/**",
   ],
   theme: {
     extend: {

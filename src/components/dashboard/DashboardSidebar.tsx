@@ -8,7 +8,7 @@ import {
   LayoutDashboard,
 } from 'lucide-react';
 import { useAifa } from '../../context/AifaContext';
-import { DashboardNavigate, DashboardTab } from './dashboardTypes';
+import { DashboardNavigate, DashboardTab } from '../../dashboard/dashboardTypes';
 
 interface DashboardSidebarProps {
   activeTab: DashboardTab;

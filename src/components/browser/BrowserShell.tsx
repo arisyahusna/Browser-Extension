@@ -3,11 +3,11 @@ import { BrowserTabBar } from './BrowserTabBar';
 import { BrowserToolbar } from './BrowserToolbar';
 import { BrowserBookmarksBar } from './BrowserBookmarksBar';
 import { BrowserContent } from './BrowserContent';
-import { AIFASignInModal } from '../aifa/AIFASignInModal';
-import { AIFAOnboardingModal } from '../aifa/AIFAOnboardingModal';
-import { AIFAEmailPreviewModal } from '../aifa/AIFAEmailPreviewModal';
-import { AIFASettingsModal } from '../aifa/AIFASettingsModal';
-import { AIFANotificationToast } from '../aifa/AIFANotificationToast';
+import { AIFASignInModal } from '../../extension/options/AIFASignInModal';
+import { AIFAOnboardingModal } from '../../extension/options/AIFAOnboardingModal';
+import { AIFAEmailPreviewModal } from '../../extension/email/AIFAEmailPreviewModal';
+import { AIFASettingsModal } from '../../extension/options/AIFASettingsModal';
+import { AIFANotificationToast } from '../../extension/content/AIFANotificationToast';
 
 export const BrowserShell: React.FC = () => {
   return (
