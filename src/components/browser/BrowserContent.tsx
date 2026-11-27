@@ -9,8 +9,8 @@ import { NewsFooter } from '../news/NewsFooter';
 import { ConnectSocialFeed } from '../social/ConnectSocialFeed';
 import { PulseFeed } from '../social/PulseFeed';
 import { SebenarnyaDashboard } from '../dashboard/SebenarnyaDashboard';
-import { AIFAVerificationPanel } from '../aifa/AIFAVerificationPanel';
-import { AIFAMinimizedFloatingButton } from '../aifa/AIFAMinimizedFloatingButton';
+import { AIFAVerificationPanel } from '../../extension/sidepanel/AIFAVerificationPanel';
+import { AIFAMinimizedFloatingButton } from '../../extension/content/AIFAMinimizedFloatingButton';
 
 export const BrowserContent: React.FC = () => {
   const { currentLocation, activeTabId, activeTab } = useBrowser();

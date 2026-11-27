@@ -1,0 +1,41 @@
+/* Sebenarnya design system for the extension pages (Popup, Side Panel, Options).
+   Import order from docs/adopting-extension.md › 3. CSS entry. Loaded after src/index.css. */
+@import '@fontsource/manrope/400.css';
+@import '@fontsource/manrope/500.css';
+@import '@fontsource/manrope/600.css';
+@import '@sebenarnya/design-system/tokens.css';
+@import 'tailwindcss/base';
+@import '@sebenarnya/design-system/base.css';
+@import 'tailwindcss/components';
+@import '@sebenarnya/design-system/ui.css';
+@import 'tailwindcss/utilities';
+
+@config '../../tailwind.extension.config.cjs';
+
+/* base.css sets this on <body>; the simulated browser resets <body> (src/index.css), so the
+   extension pages take it back here. */
+.sb-extension {
+  word-wrap: break-word;
+  word-break: break-word;
+}
+
+/* Frame sizes: the browser decides these for a real popup / side panel, so they are set once here. */
+.aifa-popup-frame {
+  width: 340px; /* ds-allow: popup frame */
+  max-width: calc(100vw - var(--spacing-32));
+}
+.aifa-chat-frame {
+  height: min(60vh, 480px); /* ds-allow: popup frame */
+}
+.aifa-sidepanel-frame {
+  width: 420px; /* ds-allow: side panel frame */
+}
+
+/* Dashboard notification dropdown: wider than --size-menu-lg so a notification reads in a few lines. */
+.aifa-menu-frame {
+  width: 380px; /* ds-allow: notification panel frame */
+  max-width: calc(100vw - var(--spacing-32));
+}
+.aifa-menu-list {
+  max-height: 360px; /* ds-allow: notification panel frame */
+}

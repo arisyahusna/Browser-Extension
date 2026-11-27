@@ -9,8 +9,8 @@ import {
   Star,
 } from 'lucide-react';
 import { useBrowser } from '../../context/BrowserContext';
-import { AIFAExtensionIcon } from '../aifa/AIFAExtensionIcon';
-import { AIFAToolbarPopup } from '../aifa/AIFAToolbarPopup';
+import { AIFAExtensionIcon } from '../../extension/toolbar/AIFAExtensionIcon';
+import { AIFAToolbarPopup } from '../../extension/popup/AIFAToolbarPopup';
 
 export const BrowserToolbar: React.FC = () => {
   const {

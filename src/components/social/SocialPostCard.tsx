@@ -1,6 +1,7 @@
 import React from 'react';
 import { SocialPost } from '../../types/social';
 import { useAifa } from '../../context/AifaContext';
+import { AIFAPostVerifyButton } from '../../extension/content/AIFAPostVerifyButton';
 import {
   ShieldCheck,
   Heart,
@@ -17,7 +18,6 @@ export const SocialPostCard: React.FC<SocialPostCardProps> = ({ post }) => {
   const {
     activeHoveredPostId,
     setActiveHoveredPostId,
-    triggerVerification,
     verificationResult,
     activeClaimId,
     locateClaimInSocialPost,
@@ -104,35 +104,11 @@ export const SocialPostCard: React.FC<SocialPostCardProps> = ({ post }) => {
 
       {/* Floating "Verify with AIFA" Action Button for this specific post */}
       <div className="absolute top-3 right-3 z-30 pointer-events-auto">
-        <div
-          className={`transition-all duration-150 ${
-            isHighlighted
-              ? 'opacity-100 scale-100 pointer-events-auto'
-              : 'opacity-0 scale-95 pointer-events-none'
-          }`}
-        >
-          {isPostVerified && panelMode === 'expanded' ? (
-            <button
-              type="button"
-              onClick={() => triggerVerification(post)}
-              className="flex items-center gap-1.5 px-3 py-1.5 bg-slate-900 text-white text-xs font-semibold rounded-xl shadow-xs border border-slate-700 cursor-pointer"
-            >
-              <ShieldCheck className="w-3.5 h-3.5 text-rose-400" />
-              <span>Panel Active</span>
-              <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse ml-0.5" />
-            </button>
-          ) : (
-            <button
-              type="button"
-              onClick={() => triggerVerification(post)}
-              className="group flex items-center gap-1.5 px-3 py-1.5 bg-[#D93043] hover:bg-[#C02638] text-white text-xs font-semibold rounded-xl shadow-[0_4px_14px_rgba(217,48,67,0.35)] hover:scale-105 active:scale-95 transition-all duration-150 border border-white/20 cursor-pointer"
-              title="Verify this social media post using AIFA"
-            >
-              <ShieldCheck className="w-3.5 h-3.5 text-white" strokeWidth={2.4} />
-              <span>Verify with AIFA</span>
-            </button>
-          )}
-        </div>
+        <AIFAPostVerifyButton
+          post={post}
+          isHighlighted={isHighlighted}
+          isPanelActive={isPostVerified && panelMode === 'expanded'}
+        />
       </div>
 
       {/* Post Author Row */}
