@@ -84,7 +84,7 @@ export const AIFAVerificationPanel: React.FC = () => {
             <div>
               <div className="flex items-center gap-6">
                 <h2 className="text-label text-foreground">AIFA</h2>
-                <Badge size="sm" variant="outline">
+                <Badge size="sm" variant="outline" className="self-center">
                   Sebenarnya.my
                 </Badge>
               </div>
@@ -141,7 +141,7 @@ export const AIFAVerificationPanel: React.FC = () => {
 
                 <div className="pt-8 border-t border-border flex items-center justify-between gap-inline text-caption text-muted-foreground">
                   <span>Verified: {verificationResult.verifiedAt}</span>
-                  <Badge size="sm">AIFA Stage 4</Badge>
+                  <Badge size="sm" className="self-center">AIFA Stage 4</Badge>
                 </div>
               </Card>
 
@@ -209,7 +209,7 @@ export const AIFAVerificationPanel: React.FC = () => {
                       <Icon icon={ShieldCheck} />
                       <span className="text-label-sm text-foreground">Need Official Clarification?</span>
                     </div>
-                    <Badge size="sm" variant="outline">
+                    <Badge size="sm" variant="outline" className="self-center">
                       Citizen Request
                     </Badge>
                   </div>

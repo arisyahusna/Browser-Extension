@@ -281,7 +281,7 @@ export const AIFAToolbarPopup: React.FC<AIFAToolbarPopupProps> = ({ isOpen, onCl
           <h3 className="text-label text-foreground">Submission History</h3>
           <Badge
             size="sm"
-            className="ml-auto"
+            className="ml-auto self-center"
             aria-label={query ? `${results.length} of ${submittedRequests.length} submissions` : `${submittedRequests.length} submissions`}
           >
             {query ? `${results.length}/${submittedRequests.length}` : submittedRequests.length}

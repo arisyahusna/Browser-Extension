@@ -38,7 +38,7 @@ export const DashboardNotifications: React.FC<DashboardNotificationsProps> = ({ 
         <div className="flex flex-col gap-text">
           <div className="flex items-center gap-inline">
             <h1 className="text-heading-lg text-foreground">Activity & Review Notifications</h1>
-            {unreadNotificationCount > 0 && <Badge>{unreadNotificationCount} New</Badge>}
+            {unreadNotificationCount > 0 && <Badge className="self-center">{unreadNotificationCount} New</Badge>}
           </div>
           <p className="text-body text-muted-foreground">
             Real-time updates regarding fact-checking inquiries and browser extension status.
@@ -89,7 +89,7 @@ export const DashboardNotifications: React.FC<DashboardNotificationsProps> = ({ 
 
                 {item.referenceNumber && (
                   <div className="mt-4 flex items-center gap-inline">
-                    <Badge size="sm">Ref: {item.referenceNumber}</Badge>
+                    <Badge size="sm" className="self-center">Ref: {item.referenceNumber}</Badge>
                     <span className="text-caption text-foreground underline underline-offset-4">View details →</span>
                   </div>
                 )}

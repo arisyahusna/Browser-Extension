@@ -80,7 +80,7 @@ export const AIFAEmailPreviewModal: React.FC = () => {
                 </div>
               </div>
 
-              <Badge variant={isCompleted ? 'muted' : 'outline'} icon={isCompleted ? CheckCircle2 : Clock}>
+              <Badge className="self-center" variant={isCompleted ? 'muted' : 'outline'} icon={isCompleted ? CheckCircle2 : Clock}>
                 {isCompleted ? 'Fact-Check Completed' : 'Under Review'}
               </Badge>
             </div>

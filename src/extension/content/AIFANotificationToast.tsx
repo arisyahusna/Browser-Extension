@@ -39,7 +39,7 @@ export const AIFANotificationToast: React.FC = () => {
 
           <div className="flex-1 min-w-0 flex flex-col gap-4">
             <div className="flex items-center justify-between gap-inline">
-              <Badge size="sm">Sebenarnya.my Update</Badge>
+              <Badge size="sm" className="self-center">Sebenarnya.my Update</Badge>
               <IconButton
                 icon={X}
                 label="Dismiss notification"

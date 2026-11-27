@@ -20,9 +20,10 @@ interface AssessmentLabelProps {
  */
 export const AssessmentLabel: React.FC<AssessmentLabelProps> = ({ assessment, label }) => {
   const type = VERDICTS[assessment];
-  if (type) return <Verdict type={type} label={label} />;
+  // Verdict and Badge align to flex-start (for columns); every use here sits in a row, so centre them.
+  if (type) return <Verdict type={type} label={label} className="self-center" />;
   return (
-    <Badge variant="outline" icon={assessment === 'unverified' ? HelpCircle : AlertTriangle}>
+    <Badge variant="outline" icon={assessment === 'unverified' ? HelpCircle : AlertTriangle} className="self-center">
       {label}
     </Badge>
   );
