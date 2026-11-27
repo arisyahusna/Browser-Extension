@@ -179,7 +179,7 @@ export const DashboardHeader: React.FC<DashboardHeaderProps> = ({ activeTab, onN
                   <div className="px-16 pt-16 pb-8 flex items-center justify-between gap-12">
                     <div className="flex items-center gap-inline">
                       <h2 className="text-label text-foreground">Notifications</h2>
-                      {unreadNotificationCount > 0 && <Badge size="sm">{unreadNotificationCount} new</Badge>}
+                      {unreadNotificationCount > 0 && <Badge size="sm" className="self-center">{unreadNotificationCount} new</Badge>}
                     </div>
                     {unreadNotificationCount > 0 && (
                       <Button variant="quiet" size="sm" icon={CheckCheck} onClick={markAllNotificationsAsRead}>

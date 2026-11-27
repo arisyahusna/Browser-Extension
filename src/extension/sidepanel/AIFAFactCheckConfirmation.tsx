@@ -38,7 +38,7 @@ export const AIFAFactCheckConfirmation: React.FC = () => {
       <Card variant="raised" className="flex flex-col gap-12">
         <div className="flex items-center justify-between gap-inline">
           <span className="text-label-sm text-foreground">Tracking Reference</span>
-          <Badge size="sm" variant="outline">
+          <Badge size="sm" variant="outline" className="self-center">
             Status: {currentRequest.status}
           </Badge>
         </div>

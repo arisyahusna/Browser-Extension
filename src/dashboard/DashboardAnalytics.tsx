@@ -184,7 +184,7 @@ export const DashboardAnalytics: React.FC<DashboardAnalyticsProps> = ({ onSwitch
   const pipeline: { status: FactCheckRequestStatus; hint: string }[] = [
     { status: 'Submitted', hint: 'Waiting to be picked up' },
     { status: 'Under Review', hint: 'Being checked by Sebenarnya.my' },
-    { status: 'Completed', hint: 'Verdict published to you' },
+    { status: 'Completed', hint: 'Verdict published' },
   ];
 
   return (

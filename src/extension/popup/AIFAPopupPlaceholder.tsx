@@ -89,7 +89,7 @@ export const AIFAPopupPlaceholder: React.FC<AIFAPopupPlaceholderProps> = ({ isOp
             <div>
               <h3 className="flex items-center gap-6 text-label-sm text-foreground">
                 AIFA Assistant
-                <Badge size="sm" variant="outline">
+                <Badge size="sm" variant="outline" className="self-center">
                   Stage 4
                 </Badge>
               </h3>

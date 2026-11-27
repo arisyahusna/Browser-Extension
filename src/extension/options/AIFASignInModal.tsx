@@ -79,7 +79,7 @@ export const AIFASignInModal: React.FC = () => {
                 <div className="text-label-sm text-foreground truncate">AIFA Demo User</div>
                 <div className="text-caption text-muted-foreground truncate">demo@example.com</div>
               </div>
-              <Badge size="sm" variant="outline">
+              <Badge size="sm" variant="outline" className="self-center">
                 Default
               </Badge>
             </Card>

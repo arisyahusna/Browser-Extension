@@ -122,8 +122,8 @@ export const DashboardHistory: React.FC<DashboardHistoryProps> = ({ initialAsses
                 <div className="flex items-center gap-inline flex-wrap">
                   <AssessmentLabel assessment={record.overallAssessment} label={ASSESSMENT_WORDS[record.overallAssessment]} />
                   <span className="text-caption text-muted-foreground">{record.verifiedAt}</span>
-                  <Badge size="sm">{record.platformName}</Badge>
-                  <Badge size="sm" className="uppercase">
+                  <Badge size="sm" className="self-center">{record.platformName}</Badge>
+                  <Badge size="sm" className="self-center uppercase">
                     {record.contentType}
                   </Badge>
                 </div>

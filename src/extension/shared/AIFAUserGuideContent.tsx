@@ -73,7 +73,7 @@ const STEPS: {
         <div className="flex flex-col gap-4 p-12 rounded-media bg-muted">
           <div className="flex items-center justify-between gap-inline">
             <span className="text-label-sm text-foreground">Ref: AIFA-DEMO-001</span>
-            <Badge size="sm" variant="outline">
+            <Badge size="sm" variant="outline" className="self-center">
               Under Review
             </Badge>
           </div>

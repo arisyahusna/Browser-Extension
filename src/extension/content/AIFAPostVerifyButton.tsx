@@ -43,7 +43,8 @@ export const AIFAPostVerifyButton: React.FC<AIFAPostVerifyButtonProps> = ({ post
             icon={ShieldCheck}
             onClick={() => triggerVerification(post)}
             title="Verify this social media post using AIFA"
-            className="shadow-float"
+            // Same motion as the button in the User Guide illustration, while the post is detected.
+            className={`shadow-float ${isHighlighted ? 'animate-bounce motion-reduce:animate-none' : ''}`}
           >
             Verify with AIFA
           </Button>

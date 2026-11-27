@@ -32,7 +32,8 @@ export const AIFAMinimizedFloatingButton: React.FC = () => {
           className="shadow-float select-none"
         >
           AIFA Results
-          <Badge size="sm" variant="media">
+          {/* .ui-badge aligns to flex-start (for columns); centre it in the button's row */}
+          <Badge size="sm" variant="media" className="self-center">
             {verificationResult.claims.length} Claims
           </Badge>
         </Button>

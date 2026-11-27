@@ -14,7 +14,7 @@ export const RequestStatusBadge: React.FC<{ status: FactCheckRequestStatus; labe
   label,
   size = 'sm',
 }) => (
-  <Badge size={size} variant={status === 'Completed' ? 'muted' : 'outline'} icon={ICONS[status]} className="shrink-0">
+  <Badge size={size} variant={status === 'Completed' ? 'muted' : 'outline'} icon={ICONS[status]} className="shrink-0 self-center">
     {label ?? status}
   </Badge>
 );
