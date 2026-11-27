@@ -50,7 +50,8 @@ export const AIFAVerifyButton: React.FC = () => {
             icon={ShieldCheck}
             onClick={() => triggerVerification()}
             aria-label="Verify this article with AIFA"
-            className="shadow-float"
+            // Same motion as the button in the User Guide illustration, while the article is detected.
+            className={`shadow-float ${isHighlighted ? 'animate-bounce motion-reduce:animate-none' : ''}`}
           >
             Verify with AIFA
           </Button>
