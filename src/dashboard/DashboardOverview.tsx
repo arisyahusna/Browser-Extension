@@ -41,7 +41,6 @@ export const DashboardOverview: React.FC<DashboardOverviewProps> = ({ onSwitchTa
       label: 'All',
       value: totalVerified,
       icon: TrendingUp,
-      featured: true,
       onClick: () => onOpenHistory('all'),
       actionLabel: 'View all verifications',
     },
@@ -92,28 +91,20 @@ export const DashboardOverview: React.FC<DashboardOverviewProps> = ({ onSwitchTa
 
       {/* 2. At-a-glance metrics (each opens the matching list) */}
       <section aria-label="Summary" className="grid grid-cols-4 lg:grid-cols-2 gap-cards">
-        {metrics.map(({ label, value, detail, icon, featured, onClick, actionLabel }) => (
+        {metrics.map(({ label, value, detail, icon, onClick, actionLabel }) => (
           <button
             type="button"
             key={label}
             onClick={onClick}
             title={actionLabel}
-            className={`text-left rounded-card p-card flex flex-col gap-group border transition-colors duration-fast ease-out cursor-pointer ${
-              featured
-                ? 'bg-surface-inverse text-foreground-inverse border-transparent'
-                : 'bg-card text-foreground border-border hover:border-border-strong'
-            }`}
+            className="text-left rounded-card p-card flex flex-col gap-group border bg-card text-foreground border-border hover:border-border-strong transition-colors duration-fast ease-out cursor-pointer"
           >
             <div className="flex items-start justify-between gap-inline">
               <div className="min-w-0">
                 <div className="text-label-sm">{label}</div>
                 {detail && <div className="text-caption text-muted-foreground truncate">{detail}</div>}
               </div>
-              <div
-                className={`size-avatar-sm rounded-full flex items-center justify-center shrink-0 ${
-                  featured ? 'bg-card text-foreground' : 'bg-muted text-foreground'
-                }`}
-              >
+              <div className="size-avatar-sm rounded-full flex items-center justify-center shrink-0 bg-muted text-foreground">
                 <Icon icon={icon} />
               </div>
             </div>
